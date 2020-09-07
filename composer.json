@@ -1,0 +1,55 @@
+{
+    "name": "boldbrush/bread",
+    "description": "BREAD (browse, read, edit, add, delete) generator for Laravel",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "bread",
+        "boldbrush"
+    ],
+    "authors": [
+        {
+            "name": "Adro Rocker",
+            "email": "me@adro.rocks"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.4"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^5.5",
+        "squizlabs/php_codesniffer": "^3.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "BoldBrush\\Bread\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BoldBrush\\Bread\\Test\\": "tests/"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@cs-check",
+            "@test"
+        ],
+        "githooks": [
+            "@pre-commit",
+            "@pre-push"
+        ],
+        "pre-commit": "cp ./.githooks/pre-commit ./.git/hooks/pre-commit && chmod +x ./.git/hooks/pre-commit",
+        "pre-push": "cp ./.githooks/pre-push ./.git/hooks/pre-push && chmod +x ./.git/hooks/pre-push",
+        "cs-check": "vendor/bin/phpcs",
+        "cs-fix": "vendor/bin/phpcbf",
+        "test": "vendor/bin/phpunit --colors=always",
+        "test-html": "vendor/bin/phpunit --coverage-html ./coverage/html",
+        "test-coverage": "vendor/bin/phpunit --colors=always --coverage-clover clover.xml"
+    }
+}

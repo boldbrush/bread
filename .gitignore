@@ -1,0 +1,9 @@
+
+/clover.xml
+/.phpunit.result.cache
+/coverage
+/vendor/
+.vscode/
+
+# Mac stuff
+.DS_*
