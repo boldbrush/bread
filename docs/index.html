@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
+	<meta name="description" content="A demonstration of docsify-themable: a delightfully simple theme system for docsify.js">
+	<title>BREAD Documentation</title>
+	<link rel="shortcut icon" href="https://boldbrush.com/styles/custom/boldbrush/images/favicon.ico">
+	<!-- Theme -->
+	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css">
+	<!-- PrismJS Themes -->
+	<link rel="stylesheet" href="https://unpkg.com/prism-github/prism-github.css">
+	<style>
+
+	</style>
+</head>
+<body>
+	<div id="app"></div>
+	<script>
+		window.$docsify = {
+			repo: 'boldbrush/bread',
+			auto2top: true,
+			coverpage: true,
+			executeScript: true,
+			loadSidebar: true,
+			loadNavbar: true,
+			mergeNavbar: true,
+			matomo: {
+				host: '//matomo.thunderwave.de',
+				id: 6
+			},
+			name: '<img src="https://boldbrush.com/styles/custom/boldbrush/images/favicon.ico" /> BREAD',
+			search: {
+				paths: 'auto',
+				placeholder: 'Search'
+			},
+			themeColor: '#ef5c28',
+		}
+	</script>
+	<script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/matomo.min.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-markdown.min.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-php.min.js"></script>
+</body>
+</html>

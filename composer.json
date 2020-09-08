@@ -15,7 +15,8 @@
         }
     ],
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "process-timeout": 0
     },
     "minimum-stability": "stable",
     "require": {
@@ -44,6 +45,7 @@
             "@pre-commit",
             "@pre-push"
         ],
+        "docs": "node_modules/docsify-cli/bin/docsify serve ./docs",
         "pre-commit": "cp ./.githooks/pre-commit ./.git/hooks/pre-commit && chmod +x ./.git/hooks/pre-commit",
         "pre-push": "cp ./.githooks/pre-push ./.git/hooks/pre-push && chmod +x ./.git/hooks/pre-push",
         "cs-check": "vendor/bin/phpcs",

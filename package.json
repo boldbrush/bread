@@ -1,0 +1,10 @@
+{
+  "name": "boldbrush.bread-docs",
+  "version": "1.0.0",
+  "description": "BREAD Documentation",
+  "author": "Adro Rocker <me@adro.rocks>",
+  "license": "MIT",
+  "dependencies": {
+    "docsify-cli": "^4.4.1"
+  }
+}

@@ -28,3 +28,7 @@ $ composer check
 If the test suite passes on your local machine you should be good to go.
 
 > *PRO TIP*: Install the git hooks by running `composer githooks`. This will make git run phpunit and code sniffer before committing or pushing to remote.
+
+## Documentation
+
+If you are adding a new feature or changing functionalities please also update the proper documentation under the `./docs` folder. We are using [docsify](https://docsify.js.org/)
