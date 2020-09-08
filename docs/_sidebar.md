@@ -1,3 +1,4 @@
+- [Home](/?id=main)
 - Getting started
 
   - [Installation](content/getting-started.md#installation)
