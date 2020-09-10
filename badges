@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+exec('composer check', $output, $return);
+
+if (!$return) {
+    $tests = realpath(__DIR__) .
+        DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR .
+        '_media' . DIRECTORY_SEPARATOR . 'tests.svg';
+    @unlink($tests);
+    exec('vendor/bin/poser tests passing green -p "./docs/_media/tests.svg"', $output, $return);
+    exec('php clover-parser ./coverage/clover.xml 80', $outputClover, $return);
+
+    $coverage = realpath(__DIR__) .
+        DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR .
+        '_media' . DIRECTORY_SEPARATOR . 'coverage.svg';
+    @unlink($coverage);
+    exec('vendor/bin/poser coverage ' . $outputClover[0] . ' -p "./docs/_media/coverage.svg"', $output, $return);
+} else {
+}

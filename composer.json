@@ -23,7 +23,8 @@
         "php": "^7.4"
     },
     "require-dev": {
-        "orchestra/testbench": "^5.5",
+        "badges/poser": "^2.0",
+        "orchestra/testbench-dusk": "^6.0",
         "squizlabs/php_codesniffer": "^3.5"
     },
     "autoload": {
@@ -36,15 +37,24 @@
             "BoldBrush\\Bread\\Test\\": "tests/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+            ],
+            "aliases": {
+            }
+        }
+    },
     "scripts": {
         "check": [
             "@cs-check",
-            "@test"
+            "@test-coverage"
         ],
         "githooks": [
             "@pre-commit",
             "@pre-push"
         ],
+        "badges": "php badges",
         "docs": "node_modules/docsify-cli/bin/docsify serve ./docs",
         "pre-commit": "cp ./.githooks/pre-commit ./.git/hooks/pre-commit && chmod +x ./.git/hooks/pre-commit",
         "pre-push": "cp ./.githooks/pre-push ./.git/hooks/pre-push && chmod +x ./.git/hooks/pre-push",
@@ -52,6 +62,7 @@
         "cs-fix": "vendor/bin/phpcbf",
         "test": "vendor/bin/phpunit --colors=always",
         "test-html": "vendor/bin/phpunit --coverage-html ./coverage/html",
-        "test-coverage": "vendor/bin/phpunit --colors=always --coverage-clover clover.xml"
+        "test-coverage": "vendor/bin/phpunit --colors=always --coverage-clover ./coverage/clover.xml",
+        "test-txt": "vendor/bin/phpunit --colors=always --coverage-text ./tests"
     }
 }
