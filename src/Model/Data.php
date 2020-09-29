@@ -4,8 +4,9 @@ namespace BoldBrush\Bread\Model;
 
 use BoldBrush\Bread\Model\Exception\ModelDoesNotExistException;
 use BoldBrush\Bread\Model\Exception\NotAnInstanceOfModelException;
-use Exception;
 use Illuminate\Database\Eloquent\Model;
+
+use function get_class;
 
 class Data
 {
@@ -24,6 +25,10 @@ class Data
      */
     private $pk;
 
+    /**
+     * @var Model The model class.
+     */
+    private $model;
 
     public function __construct($model)
     {
@@ -41,6 +46,7 @@ class Data
         $this->table = $model->getTable();
         $this->connectionName = $model->getConnectionName();
         $this->pk = $model->getKeyName();
+        $this->model = $model;
     }
 
     public function getTable(): string
@@ -56,5 +62,10 @@ class Data
     public function getPrimaryKeyName(): string
     {
         return $this->pk;
+    }
+
+    public function getModelClass(): string
+    {
+        return get_class($this->model);
     }
 }

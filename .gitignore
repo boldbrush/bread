@@ -5,6 +5,7 @@
 /vendor/
 .vscode/
 /node_modules/
+composer.lock
 
 # Mac stuff
 .DS_*

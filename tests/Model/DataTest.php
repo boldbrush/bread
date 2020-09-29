@@ -5,7 +5,7 @@ namespace BoldBrush\Bread\Test\Model;
 use BoldBrush\Bread\Model\Data;
 use BoldBrush\Bread\Model\Exception as ModelException;
 use BoldBrush\Bread\Test\App\Model;
-use Orchestra\Testbench\Dusk\TestCase;
+use BoldBrush\Bread\Test\TestCase;
 
 class DataTest extends TestCase
 {
@@ -53,5 +53,14 @@ class DataTest extends TestCase
         $id = $data->getPrimaryKeyName();
 
         $this->assertSame('id', $id);
+    }
+
+    public function testGetModelClass()
+    {
+        $data = new Data(Model\User::class);
+
+        $class = $data->getModelClass();
+
+        $this->assertSame(Model\User::class, $class);
     }
 }
