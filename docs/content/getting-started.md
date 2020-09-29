@@ -18,7 +18,7 @@ Bare bone browse/list view.
 use Illuminate\Support\Facades\Route;
 
 use BoldBrush\Bread\Bread;
-use App\Models\Artist;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
