@@ -1,18 +1,18 @@
 @extends('bread::master')
 
-@section('title', 'Browse')
+@section('title', $browser->title())
 
 @section('content')
 <div class="table-container">
     <div class="card card-default">
 
         <div class="card-body">
-            <h3 class="card-title">
+            <h2 class="card-title">
                 {{ $browser->title() }}
-            </h3>
+            </h2>
             <div class="col-sm-12">
                 <div class="table-responsive">
-                    @if ($browser->total() === 0)
+                    @if ($browser->count() === 0)
                     No data found!
                     @else
                     <table class="table-auto">
@@ -27,12 +27,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                            $properities = $browser->getColumns();
-                            @endphp
                             @foreach ($browser->records() as $item)
                             <tr>
-                                @foreach ($properities as $column)
+                                @foreach ($browser->getColumns() as $column)
                                 <td class="border px-4 py-2">{{ $item->{$column} }}</td>
                                 @endforeach
                                 @if ($browser->hasEditRoute())

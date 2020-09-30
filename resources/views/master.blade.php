@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Notitia Visum</title>
+    <title>BREAD - @yield('title')</title>
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
@@ -25,9 +25,15 @@
     </style>
 </head>
 
-<body>
-    <div class="container content">
-        @yield('content')
+<body class="antialiased">
+    <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
+        <div class="mx-auto sm:px-6 lg:px-8">
+            <div class="mt-8 bg-white overflow-hidden shadow sm:rounded-lg">
+                <div class="grid grid-cols-1 p-6">
+                    @yield('content')
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 

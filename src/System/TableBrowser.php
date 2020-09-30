@@ -46,11 +46,17 @@ class TableBrowser
 
     public function title()
     {
-        if ($this->title === null) {
-            return $this->table;
+        $title = $this->title;
+
+        if ($title === null) {
+            $title = $this->table;
         }
 
-        return $this->title;
+        $title = Str::snake($title);
+        $title = str_replace('-', ' ', $title);
+        $title = str_replace('_', ' ', $title);
+
+        return Str::title($title);
     }
 
     public function records()
@@ -101,7 +107,7 @@ class TableBrowser
 
     public function count()
     {
-        return $this->paginator->total();
+        return $this->paginator->count();
     }
 
     public function paginator()
@@ -116,7 +122,7 @@ class TableBrowser
 
     public function getColumns()
     {
-        if ($this->total() === 0) {
+        if ($this->count() === 0) {
             return [];
         }
 
@@ -143,12 +149,7 @@ class TableBrowser
     {
         $headers = $this->getColumns();
 
-        $pkColumn = $this->pkColumn;
-
-        $headers = collect($headers)->map(function ($header) use ($pkColumn) {
-            if ($header == $pkColumn) {
-                return $header;
-            }
+        $headers = collect($headers)->map(function ($header) {
             $header = Str::snake($header);
             $header = str_replace('-', ' ', $header);
             $header = str_replace('_', ' ', $header);

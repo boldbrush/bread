@@ -1,12 +1,15 @@
 - [Home](/?id=main)
 - Getting started
 
-  - [Installation](content/getting-started.md#installation)
-  - [Simple Example](content/getting-started.md#simple-example)
+  - [Quick start](content/getting-started.md)
 
-- Configuration
+- Usage
 
-  - [Configuration](content/configuration.md)
+  - [Browse (list view)](content/usage/browse.md)
 
-- [Changelog](changelog.md)
+- Contributing
+
+  - [Guide](content/contributing.md)
+
+- [Changelog](content/changelog.md)
 

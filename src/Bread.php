@@ -74,24 +74,37 @@ class Bread
         }
 
         $browser = new TableBrowser($this, $paginator);
+        $view = strval(view('bread::browse', ['browser' => $browser]));
 
-        return view('bread::browse', ['browser' => $browser]);
+        return $view;
     }
 
     public function read()
     {
+        if ($this->model === null) {
+            throw new Browse\NoModelHasBeenSetup();
+        }
     }
 
     public function edit()
     {
+        if ($this->model === null) {
+            throw new Browse\NoModelHasBeenSetup();
+        }
     }
 
     public function add()
     {
+        if ($this->model === null) {
+            throw new Browse\NoModelHasBeenSetup();
+        }
     }
 
     public function delete()
     {
+        if ($this->model === null) {
+            throw new Browse\NoModelHasBeenSetup();
+        }
     }
 
     /**

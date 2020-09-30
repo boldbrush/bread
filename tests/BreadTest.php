@@ -156,5 +156,6 @@ class BreadTest extends TestCase
 
         $this->assertInstanceOf(Bread::class, $bread);
         $this->assertStringContainsString('Adro Rocker', $view);
+        $this->assertStringContainsString('Id', $view);
     }
 }
