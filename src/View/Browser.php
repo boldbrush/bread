@@ -1,13 +1,13 @@
 <?php
 
-namespace BoldBrush\Bread\System;
+namespace BoldBrush\Bread\View;
 
 use BoldBrush\Bread\Bread;
 use BoldBrush\Bread\Field\Field;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 
-class TableBrowser
+class Browser
 {
     /** @var LengthAwarePaginator */
     protected $paginator;
@@ -22,6 +22,7 @@ class TableBrowser
 
     protected $title;
 
+    /** @var Field[] */
     protected $fields;
 
     /** @var Bread */

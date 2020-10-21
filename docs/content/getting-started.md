@@ -4,7 +4,7 @@
 
 The BREAD package provides an easy way to create list/browse views, edit and create forms as well as read/display views for your Laravel powered application. The BREAD package allows you to easily customize the way each view renders.
 
-> This package is dependent on Laravel [models](https://laravel.com/docs/eloquent) and the [query bilder](https://laravel.com/docs/queries)
+> This package is dependent on Laravel [models](https://laravel.com/docs/eloquent) and the [query builder](https://laravel.com/docs/queries)
 
 ## Installation
 

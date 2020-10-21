@@ -26,7 +26,7 @@ class Field implements FieldInterface
 
     public function __construct(string $name)
     {
-        $this->name = $name;
+        $this->setName($name);
     }
 
     public function setName(string $name): self

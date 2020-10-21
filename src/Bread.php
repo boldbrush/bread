@@ -5,7 +5,8 @@ namespace BoldBrush\Bread;
 use BoldBrush\Bread\Model\Data;
 use BoldBrush\Bread\Field\Factory;
 use BoldBrush\Bread\Exception\Browse;
-use BoldBrush\Bread\System\TableBrowser;
+use BoldBrush\Bread\View\Browser;
+use BoldBrush\Bread\System\Database\ConnectionManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,6 +21,11 @@ class Bread
      * @var Data $modelData
      */
     protected $modelData;
+
+    /**
+     * @var ConnectionManager $connectionManager
+     */
+    protected $connectionManager;
 
     /**
      * @var Field[] $fieldsForAll
@@ -73,7 +79,8 @@ class Bread
             $paginator = $model::paginate($this->perPage);
         }
 
-        $browser = new TableBrowser($this, $paginator);
+        $browser = new Browser($this, $paginator);
+
         $view = strval(view('bread::browse', ['browser' => $browser]));
 
         return $view;
@@ -117,6 +124,8 @@ class Bread
     public function model($model): self
     {
         $this->modelData = new Data($model);
+
+        $this->setConnectionConfigForModel();
 
         $this->model = $this->modelData->getModelClass();
 
@@ -196,5 +205,19 @@ class Bread
     protected function getQueryCallable(): ?callable
     {
         return $this->query;
+    }
+
+    protected function setConnectionConfigForModel(): void
+    {
+        $connectionName = $this->modelData->getConnectionName();
+
+        $connections = config('database.connections');
+
+        if (empty($connectionName)) {
+            $connectionName = config('database.' . ConnectionManager::DEFAULT_CONNECTION);
+        }
+
+        $this->connectionManager = ConnectionManager::instance()
+            ->addConnection($connections[$connectionName], $connectionName);
     }
 }
