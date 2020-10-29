@@ -1,5 +1,5 @@
 # GitHub Action for Laravel
-name: Testing BREAD
+name: build
 on: [push, pull_request]
 jobs:
   build:
@@ -34,3 +34,5 @@ jobs:
         run: composer install --no-progress --prefer-dist --optimize-autoloader
       - name: Test with Code_Sniffer and phpunit
         run: composer check
+      - name: Coverage
+        run: php vendor/bin/php-coveralls -v
