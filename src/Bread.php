@@ -4,8 +4,8 @@ namespace BoldBrush\Bread;
 
 use BoldBrush\Bread\Model\Data;
 use BoldBrush\Bread\Field\Factory;
-use BoldBrush\Bread\Exception\Browse;
-use BoldBrush\Bread\View\Browser;
+use BoldBrush\Bread\Exception;
+use BoldBrush\Bread\View;
 use BoldBrush\Bread\System\Database\ConnectionManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +43,11 @@ class Bread
     protected $editFields = [];
 
     /**
+     * @var Field[] $readFields
+     */
+    protected $readFields = [];
+
+    /**
      * @var int $perPage
      */
     protected $perPage = 5;
@@ -53,18 +58,35 @@ class Bread
     protected $query;
 
     /**
-     * @var callable $select
+     * @var array $select
      */
     protected $select;
+
+    /**
+     * @var array $links
+     */
+    protected $links;
 
     public function __construct(?array $config = null)
     {
     }
 
+    public function actionLink(string $action, string $template): self
+    {
+        $this->links[$action] = $template;
+
+        return $this;
+    }
+
+    public function actionLinks(): ?array
+    {
+        return $this->links;
+    }
+
     public function browse(): string
     {
         if ($this->model === null) {
-            throw new Browse\NoModelHasBeenSetup();
+            throw new Exception\NoModelHasBeenSetup();
         }
 
         $model = $this->model;
@@ -79,38 +101,71 @@ class Bread
             $paginator = $model::paginate($this->perPage);
         }
 
-        $browser = new Browser($this, $paginator);
+        $browser = new View\Browser($this, $paginator);
 
         $view = strval(view('bread::browse', ['browser' => $browser]));
 
         return $view;
     }
 
-    public function read()
+    public function read(?int $id = null): string
     {
         if ($this->model === null) {
-            throw new Browse\NoModelHasBeenSetup();
+            throw new Exception\NoModelHasBeenSetup();
         }
+
+        $model = $this->model;
+        $pk = $this->modelData->getPrimaryKeyName();
+        $query = $this->getQueryCallable();
+
+        if (!is_callable($query) && $id === null) {
+            throw new Exception\IdentifierCannotBeNull();
+        }
+
+        if (is_callable($query)) {
+            $query = $query($model, DB::table($this->modelData->getTable()), DB::query());
+            $model = $query->first();
+        } elseif (is_array($this->select) && count($this->select) > 0) {
+            $model = $model::select($this->select)->where($pk, $id)->first();
+        } else {
+            $model = $model::find($id);
+        }
+
+        $reader = new View\Reader($this, $model);
+
+        $view = strval(view('bread::read', ['reader' => $reader]));
+
+        return $view;
     }
 
-    public function edit()
+    public function edit(?int $id = null): string
     {
         if ($this->model === null) {
-            throw new Browse\NoModelHasBeenSetup();
+            throw new Exception\NoModelHasBeenSetup();
         }
+
+        $model = $this->model;
+        $pk = $this->modelData->getPrimaryKeyName();
+        $query = $this->getQueryCallable();
+
+        if (!is_callable($query) && $id === null) {
+            throw new Exception\IdentifierCannotBeNull();
+        }
+
+        return '';
     }
 
     public function add()
     {
         if ($this->model === null) {
-            throw new Browse\NoModelHasBeenSetup();
+            throw new Exception\NoModelHasBeenSetup();
         }
     }
 
     public function delete()
     {
         if ($this->model === null) {
-            throw new Browse\NoModelHasBeenSetup();
+            throw new Exception\NoModelHasBeenSetup();
         }
     }
 
@@ -172,9 +227,11 @@ class Bread
     public function getFieldsFor(?string $for = null): array
     {
         $fields = $this->fieldsForAll;
-        if ($for !== null) {
-            if (is_array($this->{$for . 'Fields'})) {
-                $fields = $this->{$for . 'Fields'};
+
+        $for = $for . 'Fields';
+        if ($for !== null && $for !== 'Fields') {
+            if (is_array($this->$for)) {
+                $fields = $this->$for;
             }
         }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace  BoldBrush\Bread\Exception\Browse;
+namespace  BoldBrush\Bread\Exception;
 
 use Exception;
 

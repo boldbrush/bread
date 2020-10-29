@@ -3,7 +3,7 @@
 namespace BoldBrush\Bread\Test;
 
 use BoldBrush\Bread\Bread;
-use BoldBrush\Bread\Exception\Browse;
+use BoldBrush\Bread\Exception;
 use BoldBrush\Bread\Field;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use BoldBrush\Bread\Test\App\Model;
@@ -84,7 +84,7 @@ class BreadTest extends TestCase
 
     public function testBrowseBrowseNoModelHasBeenSetup()
     {
-        $this->expectException(Browse\NoModelHasBeenSetup::class);
+        $this->expectException(Exception\NoModelHasBeenSetup::class);
         $view = (new Bread())->browse();
     }
 

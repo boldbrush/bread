@@ -21,8 +21,8 @@
                                 @foreach ($browser->rowHeaders() as $column)
                                 <th scope="row">{{ $column }}</th>
                                 @endforeach
-                                @if ($browser->hasEditRoute())
-                                <th scope="col">edit</th>
+                                @if ($browser->routeBuilder()->hasActionRoutes())
+                                <th scope="row">Actions</th>
                                 @endif
                             </tr>
                         </thead>
@@ -32,8 +32,15 @@
                                 @foreach ($browser->getColumns() as $column)
                                 <td class="border px-4 py-2">{{ $item->{$column} }}</td>
                                 @endforeach
-                                @if ($browser->hasEditRoute())
-                                <td><a href="{{ $item->editUrl }}">edit</a></td>
+                                @if ($browser->routeBuilder()->hasActionRoutes())
+                                <td class="border px-4 py-2">
+                                    @if ($browser->routeBuilder()->hasEditRoute())
+                                    <a href="{{ $browser->routeBuilder()->edit($item) }}">Edit</a>
+                                    @endif
+                                    @if ($browser->routeBuilder()->hasReadRoute())
+                                    <a href="{{ $browser->routeBuilder()->read($item) }}">Read</a>
+                                    @endif
+                                </td>
                                 @endif
                             </tr>
                             @endforeach

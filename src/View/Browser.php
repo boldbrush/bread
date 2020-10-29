@@ -4,10 +4,13 @@ namespace BoldBrush\Bread\View;
 
 use BoldBrush\Bread\Bread;
 use BoldBrush\Bread\Field\Field;
+use BoldBrush\Bread\Helper\Route\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use stdClass;
 
-class Browser
+class Browser implements RendererInterface
 {
     /** @var LengthAwarePaginator */
     protected $paginator;
@@ -16,7 +19,12 @@ class Browser
 
     protected $editRoute;
 
+    protected $readRoute;
+
     protected $viewRoute;
+
+    /** @var Builder */
+    protected $routeBuilder;
 
     protected $table;
 
@@ -34,8 +42,14 @@ class Browser
         $this->table = $bread->getModelData()->getTable();
         $this->title = $bread->getModelData()->getTable();
         $this->pkColumn = $bread->getModelData()->getPrimaryKeyName();
+        $this->routeBuilder = new Builder($bread->actionLinks(), $this->pkColumn);
         $this->fields = $bread->getFieldsFor('browse');
         $this->paginator = $paginator;
+    }
+
+    public function render(): string
+    {
+        return '';
     }
 
     public function setTitle($title)
@@ -62,29 +76,6 @@ class Browser
 
     public function records()
     {
-        if (
-            $this->pkColumn !== null &&
-            is_string($this->pkColumn) &&
-            $this->editRoute !== null &&
-            is_string($this->editRoute)
-        ) {
-            $route = $this->editRoute;
-            $parts = explode('/', $route);
-            $last = count($parts) - 1;
-            $parts[$last] = '{{id}}';
-            $routeTemplate = implode('/', $parts);
-
-            $collection = collect($this->paginator->items())->map(function ($record) use ($routeTemplate) {
-                $id = $record->{$this->pkColumn};
-
-                $record->editUrl = str_replace('{{id}}', $id, $routeTemplate);
-
-                return $record;
-            });
-
-            $this->paginator->setCollection($collection);
-        }
-
         $fields = $this->fields;
 
         $collection = collect($this->paginator->items())->map(function ($record) use ($fields) {
@@ -92,7 +83,13 @@ class Browser
                 unset($record->row_num);
             }
 
-            foreach ($record->toArray() as $key => $value) {
+            if ($record instanceof Model) {
+                $arr = $record->toArray();
+            } elseif ($record instanceof stdClass) {
+                $arr = json_decode(json_encode($record), true);
+            }
+
+            foreach ($arr as $key => $value) {
                 if (isset($fields[$key]) && $fields[$key]->isVisible() === false) {
                     unset($record->$key);
                 }
@@ -104,6 +101,11 @@ class Browser
         $this->paginator->setCollection($collection);
 
         return $this->paginator->items();
+    }
+
+    public function routeBuilder(): Builder
+    {
+        return $this->routeBuilder;
     }
 
     public function count()
@@ -133,7 +135,11 @@ class Browser
             unset($item->row_num);
         }
 
-        $item = $item->toArray();
+        if ($item instanceof Model) {
+            $item = $item->toArray();
+        } elseif ($item instanceof stdClass) {
+            $item = json_decode(json_encode($item), true);
+        }
 
         $fields = $this->fields;
 
@@ -158,10 +164,5 @@ class Browser
         });
 
         return $headers->toArray();
-    }
-
-    public function hasEditRoute()
-    {
-        return boolval($this->editRoute);
     }
 }
