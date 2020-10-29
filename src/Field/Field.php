@@ -29,70 +29,70 @@ class Field implements FieldInterface
         $this->setName($name);
     }
 
-    public function setName(string $name): self
+    public function setName(string $name): FieldInterface
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function setEditable(bool $editable): self
+    public function setEditable(bool $editable): FieldInterface
     {
         $this->editable = $editable;
 
         return $this;
     }
 
-    public function setVisible(bool $visible): self
+    public function setVisible(bool $visible): FieldInterface
     {
         $this->visible = $visible;
 
         return $this;
     }
 
-    public function setSortable(bool $sortable): self
+    public function setSortable(bool $sortable): FieldInterface
     {
         $this->sortable = $sortable;
 
         return $this;
     }
 
-    public function setSearchable(bool $searchable): self
+    public function setSearchable(bool $searchable): FieldInterface
     {
         $this->searchable = $searchable;
 
         return $this;
     }
 
-    public function setHelpText(string $helpText): self
+    public function setHelpText(string $helpText): FieldInterface
     {
         $this->helpText = $helpText;
 
         return $this;
     }
 
-    public function setDefault($default): self
+    public function setDefault($default): FieldInterface
     {
         $this->default = $default;
 
         return $this;
     }
 
-    public function setType(string $type): self
+    public function setType(string $type): FieldInterface
     {
         $this->type = $type;
 
         return $this;
     }
 
-    public function setCustomElementAfter(callable $function): self
+    public function setCustomElementAfter(callable $function): FieldInterface
     {
         $this->customElementAfter = $function;
 
         return $this;
     }
 
-    public function setDataSource(callable $function): self
+    public function setDataSource(callable $function): FieldInterface
     {
         $this->dataSource = $function;
 
