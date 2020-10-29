@@ -10,6 +10,9 @@
 /.githooks          export-ignore
 /.gitignore         export-ignore
 /.travis.yml        export-ignore
+/docs               export-ignore
+/storage            export-ignore
+/database           export-ignore
 /CONTRIBUTING.md    export-ignore
 /README.md          export-ignore
 /UPGRADING.md       export-ignore

@@ -1,7 +1,7 @@
 
 /clover.xml
 /.phpunit.result.cache
-/coverage
+/build
 /vendor/
 .vscode/
 /node_modules/
