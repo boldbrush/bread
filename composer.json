@@ -20,7 +20,7 @@
     },
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.4",
+        "php": "^7.3",
         "doctrine/dbal": "^2.11"
     },
     "require-dev": {
