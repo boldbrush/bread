@@ -10,9 +10,8 @@ before_script:
   - composer require php-coveralls/php-coveralls
 
 script:
-  - mkdir -p build/logs
-  - vendor/bin/phpunit -c phpunit.xml.dist
-  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+  - mkdir -p coverage
+  - composer check
 
 after_script:
   - if [[ "$TRAVIS_PHP_VERSION" == '7.3' ]]; then travis_retry php vendor/bin/php-coveralls -v; fi
