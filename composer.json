@@ -24,7 +24,6 @@
         "doctrine/dbal": "^2.11"
     },
     "require-dev": {
-        "badges/poser": "^2.0",
         "fzaninotto/faker": "^1.9",
         "laravel/laravel": "^8.0",
         "mockery/mockery": "^1.4",
@@ -62,7 +61,6 @@
             "@pre-commit",
             "@pre-push"
         ],
-        "badges": "php badges",
         "docs": "node_modules/docsify-cli/bin/docsify serve ./docs",
         "pre-commit": "cp ./.githooks/pre-commit ./.git/hooks/pre-commit && chmod +x ./.git/hooks/pre-commit",
         "pre-push": "cp ./.githooks/pre-push ./.git/hooks/pre-push && chmod +x ./.git/hooks/pre-push",
