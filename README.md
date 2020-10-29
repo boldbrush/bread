@@ -2,7 +2,8 @@
 
 BREAD (browse, read, edit, add, delete) generator for [Laravel](https://laravel.com/)
 
-![Tests](./docs/_media/tests.svg) ![Coverage](./docs/_media/coverage.svg)
+[![Build Status](https://travis-ci.org/boldbrush/bread.svg?branch=master)](https://travis-ci.org/boldbrush/bread)
+[![Coverage Status](https://coveralls.io/repos/github/boldbrush/bread/badge.svg?branch=master)](https://coveralls.io/github/boldbrush/bread?branch=master)
 
 ## Documentation
 
