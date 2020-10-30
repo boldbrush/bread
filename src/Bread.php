@@ -67,20 +67,23 @@ class Bread
      */
     protected $links;
 
+    /**
+     * @var string $title
+     */
+    protected $title;
+
+    /**
+     * @var string $layout
+     */
+    protected $layout;
+
+    /**
+     * @var string $view
+     */
+    protected $view;
+
     public function __construct(?array $config = null)
     {
-    }
-
-    public function actionLink(string $action, string $template): self
-    {
-        $this->links[$action] = $template;
-
-        return $this;
-    }
-
-    public function actionLinks(): ?array
-    {
-        return $this->links;
     }
 
     public function browse(): string
@@ -101,11 +104,7 @@ class Bread
             $paginator = $model::paginate($this->perPage);
         }
 
-        $browser = new View\Browser($this, $paginator);
-
-        $view = strval(view('bread::browse', ['browser' => $browser]));
-
-        return $view;
+        return (new View\Browser($this, $paginator))->render();
     }
 
     public function read(?int $id = null): string
@@ -131,11 +130,7 @@ class Bread
             $model = $model::find($id);
         }
 
-        $reader = new View\Reader($this, $model);
-
-        $view = strval(view('bread::read', ['reader' => $reader]));
-
-        return $view;
+        return (new View\Reader($this, $model))->render();
     }
 
     public function edit(?int $id = null): string
@@ -185,6 +180,18 @@ class Bread
         $this->model = $this->modelData->getModelClass();
 
         return $this;
+    }
+
+    public function actionLink(string $action, string $template): self
+    {
+        $this->links[$action] = $template;
+
+        return $this;
+    }
+
+    public function actionLinks(): ?array
+    {
+        return $this->links;
     }
 
     public function getModelClass(): string
@@ -255,6 +262,42 @@ class Bread
     public function select(array $select): self
     {
         $this->select = $select;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function title(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getLayout(): ?string
+    {
+        return $this->layout;
+    }
+
+    public function layout(string $layout): self
+    {
+        $this->layout = $layout;
+
+        return $this;
+    }
+
+    public function getView(): ?string
+    {
+        return $this->view;
+    }
+
+    public function view(string $view): self
+    {
+        $this->view = $view;
 
         return $this;
     }

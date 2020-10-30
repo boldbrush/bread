@@ -123,4 +123,9 @@ class Field implements FieldInterface
     {
         return boolval($this->searchable);
     }
+
+    public function render(): string
+    {
+        return '';
+    }
 }

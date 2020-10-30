@@ -9,18 +9,9 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use stdClass;
 
-class Reader implements RendererInterface
+class Reader extends Renderer
 {
-    protected $pkColumn;
-
-    /** @var Builder */
-    protected $routeBuilder;
-
     protected $model;
-
-    protected $table;
-
-    protected $title;
 
     /** @var Field[] */
     protected $fields;
@@ -30,40 +21,22 @@ class Reader implements RendererInterface
 
     public function __construct(Bread $bread, object $model)
     {
-        $this->bread = $bread;
+        parent::__construct($bread);
         $this->model = $model;
-        $this->table = $bread->getModelData()->getTable();
-        $this->title = $bread->getModelData()->getTable();
-        $this->pkColumn = $bread->getModelData()->getPrimaryKeyName();
-        $this->routeBuilder = new Builder($bread->actionLinks(), $this->pkColumn);
         $this->fields = $bread->getFieldsFor('read');
     }
 
     public function render(): string
     {
-        return '';
-    }
+        $layout = $this->layout() ?? 'bread::master';
+        $view = $this->view() ?? 'bread::read';
 
-    public function setTitle($title)
-    {
-        $this->title = strval($title);
+        $view = view($view, [
+            'reader' => $this,
+            'layout' => $layout,
+        ]);
 
-        return $this;
-    }
-
-    public function title()
-    {
-        $title = $this->title;
-
-        if ($title === null) {
-            $title = $this->table;
-        }
-
-        $title = Str::snake($title);
-        $title = str_replace('-', ' ', $title);
-        $title = str_replace('_', ' ', $title);
-
-        return Str::title($title);
+        return strval($view);
     }
 
     public function routeBuilder(): Builder

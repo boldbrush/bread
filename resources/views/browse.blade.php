@@ -1,4 +1,4 @@
-@extends('bread::master')
+@extends($layout)
 
 @section('title', $browser->title())
 

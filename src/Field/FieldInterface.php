@@ -13,4 +13,5 @@ interface FieldInterface
     public function setType(string $type): FieldInterface;
     public function setCustomElementAfter(callable $function): FieldInterface;
     public function setDataSource(callable $function): FieldInterface;
+    public function render(): string;
 }

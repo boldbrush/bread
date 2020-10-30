@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use stdClass;
 
-class Browser implements RendererInterface
+class Browser extends Renderer
 {
     /** @var LengthAwarePaginator */
     protected $paginator;
@@ -28,8 +28,6 @@ class Browser implements RendererInterface
 
     protected $table;
 
-    protected $title;
-
     /** @var Field[] */
     protected $fields;
 
@@ -38,40 +36,23 @@ class Browser implements RendererInterface
 
     public function __construct(Bread $bread, LengthAwarePaginator $paginator)
     {
-        $this->bread = $bread;
-        $this->table = $bread->getModelData()->getTable();
-        $this->title = $bread->getModelData()->getTable();
-        $this->pkColumn = $bread->getModelData()->getPrimaryKeyName();
-        $this->routeBuilder = new Builder($bread->actionLinks(), $this->pkColumn);
+        parent::__construct($bread);
+
         $this->fields = $bread->getFieldsFor('browse');
         $this->paginator = $paginator;
     }
 
     public function render(): string
     {
-        return '';
-    }
+        $layout = $this->layout() ?? 'bread::master';
+        $view = $this->view() ?? 'bread::browse';
 
-    public function setTitle($title)
-    {
-        $this->title = strval($title);
+        $view = view($view, [
+            'browser' => $this,
+            'layout' => $layout,
+        ]);
 
-        return $this;
-    }
-
-    public function title()
-    {
-        $title = $this->title;
-
-        if ($title === null) {
-            $title = $this->table;
-        }
-
-        $title = Str::snake($title);
-        $title = str_replace('-', ' ', $title);
-        $title = str_replace('_', ' ', $title);
-
-        return Str::title($title);
+        return strval($view);
     }
 
     public function records()
