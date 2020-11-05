@@ -1,6 +1,6 @@
 @extends($layout)
 
-@section('title', $reader->title())
+@section('title', $editor->title())
 
 @section('content')
 <div class="table-container">
@@ -8,16 +8,16 @@
 
         <div class="card-body">
             <h2 class="card-title">
-                {{ $reader->title() }}
+                {{ $editor->title() }}
             </h2>
 
             <br>
             <hr>
             <br>
 
-            <form action="">
-                @foreach ($reader->getFields() as $field)
-                    {{ $field->label() }} : {{ $reader->getModel()->{$field->getName()} }} <br>
+            <form action="" method="post">
+                @foreach ($editor->getFields() as $field)
+                    {!! $field->render($editor->getModel()->{$field->getName()}) !!}
                 @endforeach
             </form>
         </div>

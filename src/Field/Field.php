@@ -2,6 +2,9 @@
 
 namespace BoldBrush\Bread\Field;
 
+use BoldBrush\Bread\System\FieldToInputTypeMapper;
+use Illuminate\Support\Str;
+
 class Field implements FieldInterface
 {
     protected $name;
@@ -23,6 +26,8 @@ class Field implements FieldInterface
     protected $customElementAfter;
 
     protected $dataSource;
+
+    protected $component;
 
     public function __construct(string $name)
     {
@@ -82,6 +87,8 @@ class Field implements FieldInterface
     {
         $this->type = $type;
 
+        $this->setComponent(FieldToInputTypeMapper::getInputType($type));
+
         return $this;
     }
 
@@ -124,8 +131,37 @@ class Field implements FieldInterface
         return boolval($this->searchable);
     }
 
-    public function render(): string
+    public function getType(): string
     {
-        return '';
+        return $this->type;
+    }
+
+    public function label()
+    {
+        $label = Str::snake($this->getName());
+        $label = str_replace('-', ' ', $label);
+        $label = str_replace('_', ' ', $label);
+
+        return Str::title($label);
+    }
+
+    public function setComponent(string $component): self
+    {
+        $this->component = $component;
+
+        return $this;
+    }
+
+    public function component(): string
+    {
+        return $this->component;
+    }
+
+    public function render(string $value): string
+    {
+        $component = $this->component;
+        $component = new $component($this->label(), $value);
+
+        return strval($component->render());
     }
 }

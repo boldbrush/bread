@@ -3,30 +3,25 @@
 namespace BoldBrush\Bread\View;
 
 use BoldBrush\Bread\Bread;
-use BoldBrush\Bread\Field\Field;
-use BoldBrush\Bread\Helper\Route\Builder;
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
-use stdClass;
 
-class Reader extends Renderer
+class Editor extends Renderer
 {
-    protected $model;
-
     public function __construct(Bread $bread, object $model)
     {
-        parent::__construct($bread, $bread->getFieldsFor('read'));
+        parent::__construct($bread, $bread->getFieldsFor('edit'));
 
         $this->model = $model;
+
+        $this->setupFields();
     }
 
     public function render(): string
     {
         $layout = $this->layout() ?? 'bread::master';
-        $view = $this->view() ?? 'bread::read';
+        $view = $this->view() ?? 'bread::edit';
 
         $view = view($view, [
-            'reader' => $this,
+            'editor' => $this,
             'layout' => $layout,
         ]);
 

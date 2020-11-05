@@ -3,8 +3,6 @@
 namespace BoldBrush\Bread\View;
 
 use BoldBrush\Bread\Bread;
-use BoldBrush\Bread\Field\Field;
-use BoldBrush\Bread\Helper\Route\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
@@ -23,22 +21,10 @@ class Browser extends Renderer
 
     protected $viewRoute;
 
-    /** @var Builder */
-    protected $routeBuilder;
-
-    protected $table;
-
-    /** @var Field[] */
-    protected $fields;
-
-    /** @var Bread */
-    protected $bread;
-
     public function __construct(Bread $bread, LengthAwarePaginator $paginator)
     {
-        parent::__construct($bread);
+        parent::__construct($bread, $bread->getFieldsFor('browse'));
 
-        $this->fields = $bread->getFieldsFor('browse');
         $this->paginator = $paginator;
     }
 
@@ -72,7 +58,7 @@ class Browser extends Renderer
 
             foreach ($arr as $key => $value) {
                 if (isset($fields[$key]) && $fields[$key]->isVisible() === false) {
-                    unset($record->$key);
+                    // unset($record->$key);
                 }
             }
 
@@ -82,11 +68,6 @@ class Browser extends Renderer
         $this->paginator->setCollection($collection);
 
         return $this->paginator->items();
-    }
-
-    public function routeBuilder(): Builder
-    {
-        return $this->routeBuilder;
     }
 
     public function count()

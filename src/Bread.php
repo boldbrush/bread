@@ -7,6 +7,7 @@ use BoldBrush\Bread\Field\Factory;
 use BoldBrush\Bread\Exception;
 use BoldBrush\Bread\View;
 use BoldBrush\Bread\System\Database\ConnectionManager;
+use Doctrine\DBAL\Connection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
@@ -97,11 +98,11 @@ class Bread
 
         if (is_callable($query)) {
             $query = $query($model, DB::table($this->modelData->getTable()), DB::query());
-            $paginator = $query->paginate($this->perPage);
+            $paginator = $query->paginate();
         } elseif (is_array($this->select) && count($this->select) > 0) {
-            $paginator = $model::select($this->select)->paginate($this->perPage);
+            $paginator = $model::select($this->select)->paginate();
         } else {
-            $paginator = $model::paginate($this->perPage);
+            $paginator = $model::paginate();
         }
 
         return (new View\Browser($this, $paginator))->render();
@@ -147,7 +148,16 @@ class Bread
             throw new Exception\IdentifierCannotBeNull();
         }
 
-        return '';
+        if (is_callable($query)) {
+            $query = $query($model, DB::table($this->modelData->getTable()), DB::query());
+            $model = $query->first();
+        } elseif (is_array($this->select) && count($this->select) > 0) {
+            $model = $model::select($this->select)->where($pk, $id)->first();
+        } else {
+            $model = $model::find($id);
+        }
+
+        return (new View\Editor($this, $model))->render();
     }
 
     public function add()
@@ -218,7 +228,6 @@ class Bread
                 $data = [];
             }
 
-
             $fieldsArray[$field] = Factory::forData($data, $field);
         }
 
@@ -266,12 +275,12 @@ class Bread
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getTitle()
     {
         return $this->title;
     }
 
-    public function title(string $title): self
+    public function title($title): self
     {
         $this->title = $title;
 
@@ -300,6 +309,21 @@ class Bread
         $this->view = $view;
 
         return $this;
+    }
+
+    public function getConnectionConfigForModel(): Connection
+    {
+        if ($this->connectionManager === null) {
+            $this->connectionManager = ConnectionManager::instance();
+        }
+
+        $connectionName = $this->modelData->getConnectionName();
+
+        if (empty($connectionName)) {
+            $connectionName = config('database.' . ConnectionManager::DEFAULT_CONNECTION);
+        }
+
+        return $this->connectionManager->getConnection($connectionName);
     }
 
     protected function getQueryCallable(): ?callable
