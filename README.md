@@ -7,7 +7,9 @@
     <a href="https://coveralls.io/github/boldbrush/bread?branch=master">
         <img alt="Coverage Status" src="https://coveralls.io/repos/github/boldbrush/bread/badge.svg?branch=master">
     </a>
-    <img alt="Code Climate maintainability" src="https://img.shields.io/codeclimate/maintainability-percentage/boldbrush/bread?branch=master">
+    <a href="https://codeclimate.com/github/boldbrush/bread">
+        <img alt="Code Climate maintainability" src="https://img.shields.io/codeclimate/maintainability-percentage/boldbrush/bread?branch=master">
+    </a>
     <a href="https://github.com/boldbrush/bread/blob/master/LICENSE">
         <img alt="GitHub license" src="https://img.shields.io/github/license/boldbrush/bread">
     </a>
@@ -22,6 +24,8 @@
 ------
 
 BREAD (browse, read, edit, add, delete) generator for [Laravel](https://laravel.com/)
+
+__NOTICE__: This packages is being under heavy development, documentation and functionality will be changing rapidly until version 1 is released.
 
 ## Documentation
 
