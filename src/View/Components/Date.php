@@ -2,12 +2,10 @@
 
 namespace BoldBrush\Bread\View\Components;
 
-use Illuminate\View\Component;
+use BoldBrush\Bread\View\Components\AbstractComponent;
 
-class Date extends Component
+class Date extends AbstractComponent
 {
-    protected $name;
-
     protected $date;
 
     /**
@@ -15,9 +13,10 @@ class Date extends Component
      *
      * @return void
      */
-    public function __construct(string $name, string $date)
+    public function __construct(string $name, string $label, string $date)
     {
-        $this->name = $name;
+        parent::__construct($name, $label);
+
         $this->date = $date;
     }
 
@@ -29,6 +28,7 @@ class Date extends Component
     public function render()
     {
         return view('bread::components.date', [
+            'label' => $this->label,
             'name' => $this->name,
             'date' => $this->date,
         ]);

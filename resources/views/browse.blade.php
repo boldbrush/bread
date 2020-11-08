@@ -50,6 +50,13 @@
                                         </svg>
                                     </a>
                                     @endif
+                                    @if ($browser->routeBuilder()->hasDeleteRoute())
+                                    <a class="inline-block js-delete" href="{{ $browser->routeBuilder()->delete($item) }}">
+                                        <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </a>
+                                    @endif
                                 </td>
                                 @endif
                             </tr>
@@ -72,4 +79,28 @@
         </div>
     </div>
 </div>
+@if ($browser->routeBuilder()->hasDeleteRoute())
+<script>
+    function findParentByTagName(element, className) {
+        var parent = element;
+        while (parent !== null && parent.classList.value.indexOf(className) === -1) {
+            parent = parent.parentElement;
+        }
+        return parent;
+    }
+
+    function handleAnchorClick(event) {
+        event = event || window.event;
+        var element = findParentByTagName(event.target, "js-delete");
+        if (element) {
+            event.preventDefault();
+            if (window.confirm("Do you really want to delete this item?")) {
+                window.location.href = element.getAttribute("href");
+            }
+        }
+    }
+
+    document.documentElement.addEventListener("click", handleAnchorClick, false);
+</script>
+@endif
 @endsection

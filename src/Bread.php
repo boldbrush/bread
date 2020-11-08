@@ -5,6 +5,7 @@ namespace BoldBrush\Bread;
 use BoldBrush\Bread\Model\Data;
 use BoldBrush\Bread\Field\Factory;
 use BoldBrush\Bread\Exception;
+use BoldBrush\Bread\Helper\Route\Builder;
 use BoldBrush\Bread\View;
 use BoldBrush\Bread\System\Database\ConnectionManager;
 use Doctrine\DBAL\Connection;
@@ -167,11 +168,60 @@ class Bread
         }
     }
 
-    public function delete()
+    public function delete(?int $id = null)
     {
         if ($this->model === null) {
             throw new Exception\NoModelHasBeenSetup();
         }
+
+        $model = $this->model;
+        $pk = $this->modelData->getPrimaryKeyName();
+        $query = $this->getQueryCallable();
+
+        if (!is_callable($query) && $id === null) {
+            throw new Exception\IdentifierCannotBeNull();
+        }
+    }
+
+    public function save(?int $id = null, ?array $data = [])
+    {
+        if ($this->model === null) {
+            throw new Exception\NoModelHasBeenSetup();
+        }
+
+        $model = $this->model;
+        $pk = $this->modelData->getPrimaryKeyName();
+        $query = $this->getQueryCallable();
+
+        if (!is_callable($query) && $id === null) {
+            throw new Exception\IdentifierCannotBeNull();
+        }
+
+        if (is_callable($query)) {
+            $query = $query($model, DB::table($this->modelData->getTable()), DB::query());
+            $model = $query->first();
+        } elseif (is_array($this->select) && count($this->select) > 0) {
+            $model = $model::select($this->select)->where($pk, $id)->first();
+        } else {
+            $model = $model::find($id);
+        }
+
+        if (isset($data['_token'])) {
+            unset($data['_token']);
+        }
+
+        foreach ($data as $attribute => $value) {
+            $model->$attribute = $value;
+        }
+        $model->save($data);
+
+        $routeBuilder = new Builder($this->actionLinks(), $pk);
+
+        if ($routeBuilder->hasBrowseRoute()) {
+            return redirect($routeBuilder->browse());
+        }
+
+        return back();
     }
 
     /**

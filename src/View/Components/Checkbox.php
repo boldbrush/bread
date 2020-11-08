@@ -2,12 +2,10 @@
 
 namespace BoldBrush\Bread\View\Components;
 
-use Illuminate\View\Component;
+use BoldBrush\Bread\View\Components\AbstractComponent;
 
-class Checkbox extends Component
+class Checkbox extends AbstractComponent
 {
-    protected $name;
-
     protected $checkbox;
 
     /**
@@ -15,9 +13,10 @@ class Checkbox extends Component
      *
      * @return void
      */
-    public function __construct(string $name, bool $checkbox)
+    public function __construct(string $name, string $label, bool $checkbox)
     {
-        $this->name = $name;
+        parent::__construct($name, $label);
+
         $this->checkbox = $checkbox;
     }
 
@@ -29,6 +28,7 @@ class Checkbox extends Component
     public function render()
     {
         return view('bread::components.checkbox', [
+            'label' => $this->label,
             'name' => $this->name,
             'checkbox' => $this->checkbox,
         ]);

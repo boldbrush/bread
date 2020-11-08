@@ -4,10 +4,8 @@ namespace BoldBrush\Bread\View\Components;
 
 use Illuminate\View\Component;
 
-class Text extends Component
+class Text extends AbstractComponent
 {
-    protected $name;
-
     protected $text;
 
     /**
@@ -15,9 +13,10 @@ class Text extends Component
      *
      * @return void
      */
-    public function __construct(string $name, string $text)
+    public function __construct(string $name, string $label, string $text)
     {
-        $this->name = $name;
+        parent::__construct($name, $label);
+
         $this->text = $text;
     }
 
@@ -29,6 +28,7 @@ class Text extends Component
     public function render()
     {
         return view('bread::components.text', [
+            'label' => $this->label,
             'name' => $this->name,
             'text' => $this->text,
         ]);

@@ -2,12 +2,10 @@
 
 namespace BoldBrush\Bread\View\Components;
 
-use Illuminate\View\Component;
+use BoldBrush\Bread\View\Components\AbstractComponent;
 
-class Number extends Component
+class Number extends AbstractComponent
 {
-    protected $name;
-
     protected $number;
 
     /**
@@ -15,9 +13,10 @@ class Number extends Component
      *
      * @return void
      */
-    public function __construct(string $name, int $number)
+    public function __construct(string $name, string $label, int $number)
     {
-        $this->name = $name;
+        parent::__construct($name, $label);
+
         $this->number = $number;
     }
 
@@ -29,6 +28,7 @@ class Number extends Component
     public function render()
     {
         return view('bread::components.number', [
+            'label' => $this->label,
             'name' => $this->name,
             'number' => $this->number,
         ]);

@@ -160,7 +160,7 @@ class Field implements FieldInterface
     public function render(string $value): string
     {
         $component = $this->component;
-        $component = new $component($this->label(), $value);
+        $component = new $component($this->getName(), $this->label(), $value);
 
         return strval($component->render());
     }
