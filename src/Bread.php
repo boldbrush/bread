@@ -188,6 +188,13 @@ class Bread
             unset($data['_token']);
         }
 
+        /**
+         * Don't save primary key
+         */
+        if (isset($data[$pk])) {
+            unset($data[$pk]);
+        }
+
         $sm = $this
             ->getConnectionConfigForModel()
             ->getSchemaManager();
