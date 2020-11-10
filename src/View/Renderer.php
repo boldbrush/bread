@@ -141,7 +141,9 @@ abstract class Renderer implements RendererInterface
         $fields = [];
 
         foreach ($model as $attribute => $value) {
-            $fields[$attribute] = $this->fields[$attribute];
+            if (isset($this->fields[$attribute])) {
+                $fields[$attribute] = $this->fields[$attribute];
+            }
         }
 
         return $fields;

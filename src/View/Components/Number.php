@@ -13,7 +13,7 @@ class Number extends AbstractComponent
      *
      * @return void
      */
-    public function __construct(string $name, string $label, int $number)
+    public function __construct(string $name, string $label, ?int $number)
     {
         parent::__construct($name, $label);
 

@@ -28,7 +28,7 @@ class BreadTest extends TestCase
     {
         $bread = (new Bread())->model(Model\User::class);
         $path = '/edit/{{id}}';
-        $bread->fields([
+        $fields = [
             'id',
             'email' => [
                 'editable' => true,
@@ -48,9 +48,17 @@ class BreadTest extends TestCase
                 },
             ],
             'username',
-        ]);
+        ];
+        $bread->fields($fields);
 
-        $this->assertInstanceOf(Bread::class, $bread);
+        $this->assertSame(
+            ['id', 'email', 'username'],
+            array_keys($bread->getFieldsFor())
+        );
+
+        foreach ($bread->getFieldsFor() as $field) {
+            $this->assertInstanceOf(Field\Field::class, $field);
+        }
     }
 
     public function testBrowseFields()
@@ -79,13 +87,49 @@ class BreadTest extends TestCase
             'username',
         ], 'browse');
 
-        $this->assertInstanceOf(Bread::class, $bread);
+        $this->assertSame(
+            ['id', 'email', 'username'],
+            array_keys($bread->getFieldsFor())
+        );
+
+        foreach ($bread->getFieldsFor('browse') as $field) {
+            $this->assertInstanceOf(Field\Field::class, $field);
+        }
     }
 
     public function testBrowseBrowseNoModelHasBeenSetup()
     {
         $this->expectException(Exception\NoModelHasBeenSetup::class);
         $view = (new Bread())->browse();
+    }
+
+    public function testEditIdentifierCannotBeNull()
+    {
+        $this->expectException(Exception\IdentifierCannotBeNull::class);
+        $view = (new Bread())->model(Model\User::class)->edit();
+    }
+
+    public function testGetActionLinks()
+    {
+        $user = Model\User::factory()->make();
+
+        $user->save();
+
+        $bread = (new Bread())->model(Model\User::class)
+            ->actionLink('edit', '/edit/:id');
+
+        $this->assertSame(
+            ['edit' => '/edit/:id'],
+            $bread->actionLinks()
+        );
+    }
+
+    public function testGetModelClass()
+    {
+        $bread = (new Bread())->model(Model\User::class);
+
+        $this->assertTrue(is_string($bread->getModelClass()));
+        $this->assertSame(Model\User::class, $bread->getModelClass());
     }
 
     public function testBrowseBrowseNoData()
@@ -128,11 +172,11 @@ class BreadTest extends TestCase
         $bread = (new Bread())->model(Model\User::class)
             ->select(['id', 'username'])
             ->fields([
-            'id' => [
-                'visible' => false,
-            ],
-            'username',
-        ], 'browse');
+                'id' => [
+                    'visible' => false,
+                ],
+                'username',
+            ], 'browse');
 
         $view = $bread->browse();
 

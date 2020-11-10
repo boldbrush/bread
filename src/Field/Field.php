@@ -157,7 +157,7 @@ class Field implements FieldInterface
         return $this->component;
     }
 
-    public function render(string $value): string
+    public function render($value): string
     {
         $component = $this->component;
         $component = new $component($this->getName(), $this->label(), $value);

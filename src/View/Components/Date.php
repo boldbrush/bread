@@ -13,7 +13,7 @@ class Date extends AbstractComponent
      *
      * @return void
      */
-    public function __construct(string $name, string $label, string $date)
+    public function __construct(string $name, string $label, ?string $date)
     {
         parent::__construct($name, $label);
 

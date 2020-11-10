@@ -13,7 +13,7 @@ class Checkbox extends AbstractComponent
      *
      * @return void
      */
-    public function __construct(string $name, string $label, bool $checkbox)
+    public function __construct(string $name, string $label, ?bool $checkbox)
     {
         parent::__construct($name, $label);
 

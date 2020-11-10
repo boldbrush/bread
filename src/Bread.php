@@ -90,9 +90,7 @@ class Bread
 
     public function browse(): string
     {
-        if ($this->model === null) {
-            throw new Exception\NoModelHasBeenSetup();
-        }
+        $this->checkIfModelHasBeenSetup();
 
         $model = $this->model;
         $query = $this->getQueryCallable();
@@ -111,17 +109,13 @@ class Bread
 
     public function read(?int $id = null): string
     {
-        if ($this->model === null) {
-            throw new Exception\NoModelHasBeenSetup();
-        }
+        $this->checkIfModelHasBeenSetup();
 
         $model = $this->model;
         $pk = $this->modelData->getPrimaryKeyName();
         $query = $this->getQueryCallable();
 
-        if (!is_callable($query) && $id === null) {
-            throw new Exception\IdentifierCannotBeNull();
-        }
+        $this->checkIfIdentifierCanBeNull($id);
 
         if (is_callable($query)) {
             $query = $query($model, DB::table($this->modelData->getTable()), DB::query());
@@ -137,17 +131,12 @@ class Bread
 
     public function edit(?int $id = null): string
     {
-        if ($this->model === null) {
-            throw new Exception\NoModelHasBeenSetup();
-        }
+        $this->checkIfModelHasBeenSetup();
+        $this->checkIfIdentifierCanBeNull($id);
 
         $model = $this->model;
         $pk = $this->modelData->getPrimaryKeyName();
         $query = $this->getQueryCallable();
-
-        if (!is_callable($query) && $id === null) {
-            throw new Exception\IdentifierCannotBeNull();
-        }
 
         if (is_callable($query)) {
             $query = $query($model, DB::table($this->modelData->getTable()), DB::query());
@@ -163,31 +152,20 @@ class Bread
 
     public function add()
     {
-        if ($this->model === null) {
-            throw new Exception\NoModelHasBeenSetup();
-        }
+        $this->checkIfModelHasBeenSetup();
     }
 
     public function delete(?int $id = null)
     {
-        if ($this->model === null) {
-            throw new Exception\NoModelHasBeenSetup();
-        }
+        $this->checkIfModelHasBeenSetup();
+        $this->checkIfIdentifierCanBeNull($id);
 
-        $model = $this->model;
-        $pk = $this->modelData->getPrimaryKeyName();
-        $query = $this->getQueryCallable();
-
-        if (!is_callable($query) && $id === null) {
-            throw new Exception\IdentifierCannotBeNull();
-        }
+        throw new \Exception("This method needs to be implemented", 500);
     }
 
     public function save(?int $id = null, ?array $data = [])
     {
-        if ($this->model === null) {
-            throw new Exception\NoModelHasBeenSetup();
-        }
+        $this->checkIfModelHasBeenSetup();
 
         $model = $this->model;
         $pk = $this->modelData->getPrimaryKeyName();
@@ -210,9 +188,25 @@ class Bread
             unset($data['_token']);
         }
 
+        $sm = $this
+            ->getConnectionConfigForModel()
+            ->getSchemaManager();
+
+        $platform = $sm->getDatabasePlatform();
+
+        $columns = $sm->listTableColumns($this->modelData->getTable());
+
+        foreach ($columns as $column) {
+            if (isset($data[$column->getName()])) {
+                $data[$column->getName()] = $column->getType()
+                    ->convertToPHPValue($data[$column->getName()], $platform);
+            }
+        }
+
         foreach ($data as $attribute => $value) {
             $model->$attribute = $value;
         }
+
         $model->save($data);
 
         $routeBuilder = new Builder($this->actionLinks(), $pk);
@@ -393,5 +387,31 @@ class Bread
 
         $this->connectionManager = ConnectionManager::instance()
             ->addConnection($connections[$connectionName], $connectionName);
+    }
+
+    /**
+     * Check if model has been setup
+     *
+     * @throws Exception\NoModelHasBeenSetup
+     */
+    protected function checkIfModelHasBeenSetup(): void
+    {
+        if ($this->model === null) {
+            throw new Exception\NoModelHasBeenSetup();
+        }
+    }
+
+    /**
+     * Check if identifier can be null.
+     *
+     * @throws Exception\IdentifierCannotBeNull
+     */
+    protected function checkIfIdentifierCanBeNull(?int $id): void
+    {
+        $query = $this->getQueryCallable();
+
+        if (!is_callable($query) && $id === null) {
+            throw new Exception\IdentifierCannotBeNull();
+        }
     }
 }

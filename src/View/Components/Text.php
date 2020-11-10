@@ -13,7 +13,7 @@ class Text extends AbstractComponent
      *
      * @return void
      */
-    public function __construct(string $name, string $label, string $text)
+    public function __construct(string $name, string $label, ?string $text)
     {
         parent::__construct($name, $label);
 
