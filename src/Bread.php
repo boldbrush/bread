@@ -8,6 +8,7 @@ use BoldBrush\Bread\Config\Initializer;
 use BoldBrush\Bread\Exception;
 use BoldBrush\Bread\Field\Config\Config;
 use BoldBrush\Bread\Field\Container;
+use BoldBrush\Bread\Helper\Route\Builder;
 use BoldBrush\Bread\Model\Metadata;
 use BoldBrush\Bread\Page\Page;
 use BoldBrush\Bread\View;
