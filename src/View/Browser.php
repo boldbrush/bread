@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BoldBrush\Bread\View;
 
 use BoldBrush\Bread\Bread;
+use BoldBrush\Bread\Field\Container;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +26,7 @@ class Browser extends Renderer
 
     public function __construct(Bread $bread, LengthAwarePaginator $paginator)
     {
-        parent::__construct($bread, $bread->getFieldsFor('browse'));
+        parent::__construct($bread, $bread->getFields()->for(Container::BROWSE)->toArray());
 
         $this->paginator = $paginator;
     }

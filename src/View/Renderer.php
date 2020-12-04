@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BoldBrush\Bread\View;
 
 use BoldBrush\Bread\Bread;
@@ -35,8 +37,8 @@ abstract class Renderer implements RendererInterface
     {
         $this->bread = $bread;
         $this->fields = $fields;
-        $this->table = $bread->getModelData()->getTable();
-        $this->pkColumn = $bread->getModelData()->getPrimaryKeyName();
+        $this->table = $bread->getModelMetadata()->getTable();
+        $this->pkColumn = $bread->getModelMetadata()->getPrimaryKeyName();
         $this->routeBuilder = new Builder($bread->actionLinks(), $this->pkColumn);
         $this->setTitle($bread->getTitle())
             ->setLayout($bread->getLayout())
@@ -60,7 +62,7 @@ abstract class Renderer implements RendererInterface
             return $title;
         };
 
-        $title = $title ?? $fn($this->bread->getModelData()->getTable());
+        $title = $title ?? $fn($this->bread->getModelMetadata()->getTable());
 
         $this->title = $title;
 

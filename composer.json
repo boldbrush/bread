@@ -1,8 +1,8 @@
 {
     "name": "boldbrush/bread",
-    "description": "BREAD (browse, read, edit, add, delete) generator for Laravel",
+    "description": "Bread - A BREAD (browse, read, edit, add, delete) generator for Laravel",
     "type": "library",
-    "license": "MIT",
+    "license": "Apache License 2.0",
     "keywords": [
         "laravel",
         "bread",
@@ -40,7 +40,10 @@
     "autoload-dev": {
         "psr-4": {
             "BoldBrush\\Bread\\Test\\": "tests/"
-        }
+        },
+        "files": [
+            "./tests/helpers.php"
+        ]
     },
     "extra": {
         "laravel": {

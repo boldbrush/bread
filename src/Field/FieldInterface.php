@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BoldBrush\Bread\Field;
+
+use BoldBrush\Bread\Field\Config\FieldConfigurator;
 
 interface FieldInterface
 {

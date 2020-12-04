@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BoldBrush\Bread\Model;
 
 use BoldBrush\Bread\Model\Exception\ModelDoesNotExistException;
 use BoldBrush\Bread\Model\Exception\NotAnInstanceOfModelException;
 use Illuminate\Database\Eloquent\Model;
 
-use function get_class;
-
-class Data
+class Metadata
 {
     /**
      * @var string The database connection name.

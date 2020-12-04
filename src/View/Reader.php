@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BoldBrush\Bread\View;
 
 use BoldBrush\Bread\Bread;
+use BoldBrush\Bread\Field\Container;
 use BoldBrush\Bread\Field\Field;
 use BoldBrush\Bread\Helper\Route\Builder;
 use Illuminate\Support\Str;
@@ -15,7 +18,7 @@ class Reader extends Renderer
 
     public function __construct(Bread $bread, object $model)
     {
-        parent::__construct($bread, $bread->getFieldsFor('read'));
+        parent::__construct($bread, $bread->getFields()->for(Container::ADD)->toArray());
 
         $this->model = $model;
     }

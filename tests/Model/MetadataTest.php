@@ -2,64 +2,64 @@
 
 namespace BoldBrush\Bread\Test\Model;
 
-use BoldBrush\Bread\Model\Data;
+use BoldBrush\Bread\Model\Metadata;
 use BoldBrush\Bread\Model\Exception as ModelException;
 use BoldBrush\Bread\Test\App\Model;
 use BoldBrush\Bread\Test\TestCase;
 
-class DataTest extends TestCase
+class MetadataTest extends TestCase
 {
     public function testInstance()
     {
-        $data = new Data(Model\User::class);
+        $metadata = new Metadata(Model\User::class);
 
-        $this->assertInstanceOf(Data::class, $data);
+        $this->assertInstanceOf(Metadata::class, $metadata);
     }
 
     public function testModelDoesNotExistException()
     {
         $this->expectException(ModelException\ModelDoesNotExistException::class);
-        $data = new Data('NotExistentModel');
+        $metadata = new Metadata('NotExistentModel');
     }
 
     public function testNotAnInstanceOfModelException()
     {
         $this->expectException(ModelException\NotAnInstanceOfModelException::class);
-        $data = new Data(Model\NotingElseMatters::class);
+        $data = new Metadata(Model\NotingElseMatters::class);
     }
 
     public function testGetTable()
     {
-        $data = new Data(Model\User::class);
+        $metadata = new Metadata(Model\User::class);
 
-        $table = $data->getTable();
+        $table = $metadata->getTable();
 
         $this->assertSame('users', $table);
     }
 
     public function testGetConnectionName()
     {
-        $data = new Data(Model\User::class);
+        $metadata = new Metadata(Model\User::class);
 
-        $connectionName = $data->getConnectionName();
+        $connectionName = $metadata->getConnectionName();
 
         $this->assertSame(null, $connectionName);
     }
 
     public function testGetPrimaryKeyName()
     {
-        $data = new Data(Model\User::class);
+        $metadata = new Metadata(Model\User::class);
 
-        $id = $data->getPrimaryKeyName();
+        $id = $metadata->getPrimaryKeyName();
 
         $this->assertSame('id', $id);
     }
 
     public function testGetModelClass()
     {
-        $data = new Data(Model\User::class);
+        $metadata = new Metadata(Model\User::class);
 
-        $class = $data->getModelClass();
+        $class = $metadata->getModelClass();
 
         $this->assertSame(Model\User::class, $class);
     }

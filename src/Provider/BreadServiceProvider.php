@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BoldBrush\Bread\Provider;
 
 use Illuminate\Support\ServiceProvider;

@@ -5,8 +5,10 @@ namespace BoldBrush\Bread\Test;
 use BoldBrush\Bread\Bread;
 use BoldBrush\Bread\Exception;
 use BoldBrush\Bread\Field;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
+use BoldBrush\Bread\Field\Container;
 use BoldBrush\Bread\Test\App\Model;
+use BoldBrush\Bread\Test\TestCase;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 class BreadTest extends TestCase
 {
@@ -26,73 +28,66 @@ class BreadTest extends TestCase
 
     public function testGeneralFields()
     {
-        $bread = (new Bread())->model(Model\User::class);
         $path = '/edit/{{id}}';
-        $fields = [
-            'id',
-            'email' => [
-                'editable' => true,
-                'visible' => true,
-                'sortable' => false,
-                'searchable' => true,
-                'helpText' => "This is the help text for the title",
-                'default' => "Default Title Value goes here",
-                'type' => 'text',
-                'customElementAfter' => function (EloquentModel $model, Field\Field $field) use ($path) {
-                    $key = $model->getKeyName();
-                    $path = str_replace('{{id}}', $model->$key, $path);
-                    return '<a href="'. $path .'">Add Medium</a>';
-                },
-                'dataSource' => function () {
-                    return ['guest', 'editor', 'admin'];
-                },
-            ],
-            'username',
-        ];
-        $bread->fields($fields);
+        $bread = (new Bread())->model(Model\User::class)
+            ->configureFields()
+                ->field('id')
+                ->field('email')
+                    ->editable(false)
+                    ->visible(true)
+                    ->sortable(false)
+                    ->searchable(true)
+                    ->helpText('This is the help text for the email')
+                    ->default("Default Email Value goes here")
+                    ->type("email")
+                    ->customElementAfter(function (EloquentModel $model, Field\Field $field) use ($path) {
+                        $key = $model->getKeyName();
+                        $path = str_replace('{{id}}', $model->$key, $path);
+                        return '<a href="'. $path .'">Add Medium</a>';
+                    })->dataSource(function () {
+                        return ['guest', 'editor', 'admin'];
+                    })
+            ->bread();
 
         $this->assertSame(
-            ['id', 'email', 'username'],
-            array_keys($bread->getFieldsFor())
+            ['id', 'email'],
+            array_keys($bread->getFields()->for()->toArray())
         );
 
-        foreach ($bread->getFieldsFor() as $field) {
+        foreach ($bread->getFields()->for()->toArray() as $field) {
             $this->assertInstanceOf(Field\Field::class, $field);
         }
     }
 
     public function testBrowseFields()
     {
-        $bread = (new Bread())->model(Model\User::class);
         $path = '/edit/{{id}}';
-        $bread->fields([
-            'id',
-            'email' => [
-                'editable' => true,
-                'visible' => true,
-                'sortable' => false,
-                'searchable' => true,
-                'helpText' => "This is the help text for the title",
-                'default' => "Default Title Value goes here",
-                'type' => 'text',
-                'customElementAfter' => function (EloquentModel $model, Field\Field $field) use ($path) {
-                    $key = $model->getKeyName();
-                    $path = str_replace('{{id}}', $model->$key, $path);
-                    return '<a href="'. $path .'">Add Medium</a>';
-                },
-                'dataSource' => function () {
-                    return ['guest', 'editor', 'admin'];
-                },
-            ],
-            'username',
-        ], 'browse');
+        $bread = (new Bread())->model(Model\User::class)
+            ->configureFields(Container::BROWSE)
+                ->field('id')
+                ->field('email')
+                    ->editable(false)
+                    ->visible(true)
+                    ->sortable(false)
+                    ->searchable(true)
+                    ->helpText('This is the help text for the email')
+                    ->default("Default Email Value goes here")
+                    ->type("email")
+                    ->customElementAfter(function (EloquentModel $model, Field\Field $field) use ($path) {
+                        $key = $model->getKeyName();
+                        $path = str_replace('{{id}}', $model->$key, $path);
+                        return '<a href="'. $path .'">Add Medium</a>';
+                    })->dataSource(function () {
+                        return ['guest', 'editor', 'admin'];
+                    })
+            ->bread();
 
         $this->assertSame(
-            ['id', 'email', 'username'],
-            array_keys($bread->getFieldsFor())
+            ['id', 'email'],
+            array_keys($bread->getFields()->for(Container::BROWSE)->toArray())
         );
 
-        foreach ($bread->getFieldsFor('browse') as $field) {
+        foreach ($bread->getFields()->for(Container::BROWSE)->toArray() as $field) {
             $this->assertInstanceOf(Field\Field::class, $field);
         }
     }
@@ -134,13 +129,12 @@ class BreadTest extends TestCase
 
     public function testBrowseBrowseNoData()
     {
+
         $bread = (new Bread())->model(Model\User::class)
-            ->fields([
-            'id' => [
-                'visible' => false,
-            ],
-            'username',
-        ], 'browse');
+            ->configureFields(Container::BROWSE)
+                ->field('id')
+                    ->visible(false)
+            ->bread();
 
         $view = $bread->browse();
 
@@ -154,12 +148,10 @@ class BreadTest extends TestCase
             ->query(function ($model, $queryBuilder, $rawQueryBuilder) {
                 return  $model::select(['id', 'username'])->where('id', '>', 0);
             })
-            ->fields([
-            'id' => [
-                'visible' => false,
-            ],
-            'username',
-        ], 'browse');
+            ->configureFields(Container::BROWSE)
+                ->field('id')
+                    ->visible(false)
+            ->bread();
 
         $view = $bread->browse();
 
@@ -171,12 +163,10 @@ class BreadTest extends TestCase
     {
         $bread = (new Bread())->model(Model\User::class)
             ->select(['id', 'username'])
-            ->fields([
-                'id' => [
-                    'visible' => false,
-                ],
-                'username',
-            ], 'browse');
+            ->configureFields(Container::BROWSE)
+                ->field('id')
+                    ->visible(false)
+            ->bread();
 
         $view = $bread->browse();
 
@@ -189,7 +179,6 @@ class BreadTest extends TestCase
         $user = new Model\User();
         $user->name = 'Adro Rocker';
         $user->email = 'me@adro.rocks';
-        $user->username = 'adro';
         $user->password = '123456';
 
         $user->save();
