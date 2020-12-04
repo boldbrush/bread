@@ -2,7 +2,7 @@
     "name": "boldbrush/bread",
     "description": "Bread - A BREAD (browse, read, edit, add, delete) generator for Laravel",
     "type": "library",
-    "license": "Apache License 2.0",
+    "license": "Apache-2.0",
     "keywords": [
         "laravel",
         "bread",
