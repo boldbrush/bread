@@ -7,7 +7,7 @@ namespace BoldBrush\Bread\Field;
 use Exception;
 use Illuminate\Support\Collection;
 
-class Container
+class FieldContainer
 {
     public const GENERAL = 'general';
 

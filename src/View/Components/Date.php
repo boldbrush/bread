@@ -2,7 +2,7 @@
 
 namespace BoldBrush\Bread\View\Components;
 
-use BoldBrush\Bread\View\Components\AbstractComponent;
+use Illuminate\View\Component;
 
 class Date extends AbstractComponent
 {
@@ -20,6 +20,11 @@ class Date extends AbstractComponent
         $this->date = $date;
     }
 
+    public static function factory(string $name, string $label, $value = null): Component
+    {
+        return new self($name, $label, strval($value));
+    }
+
     /**
      * Get the view / contents that represent the component.
      *
@@ -27,7 +32,7 @@ class Date extends AbstractComponent
      */
     public function render()
     {
-        return view('bread::components.date', [
+        return view($this->components . '.date', [
             'label' => $this->label,
             'name' => $this->name,
             'date' => $this->date,

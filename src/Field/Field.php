@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BoldBrush\Bread\Field;
 
-use BoldBrush\Bread\Field\Config\FieldConfigurator;
 use BoldBrush\Bread\System\FieldToInputTypeMapper;
 use Exception;
 use Illuminate\Support\Str;
@@ -164,7 +163,7 @@ class Field implements FieldInterface
     public function render($value): string
     {
         $component = $this->component;
-        $component = new $component($this->getName(), $this->label(), $value);
+        $component = $component::factory($this->getName(), $this->label(), $value);
 
         return strval($component->render());
     }

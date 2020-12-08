@@ -2,7 +2,7 @@
 
 namespace BoldBrush\Bread\View\Components;
 
-use BoldBrush\Bread\View\Components\AbstractComponent;
+use Illuminate\View\Component;
 
 class Checkbox extends AbstractComponent
 {
@@ -20,6 +20,11 @@ class Checkbox extends AbstractComponent
         $this->checkbox = $checkbox;
     }
 
+    public static function factory(string $name, string $label, $value = null): Component
+    {
+        return new self($name, $label, boolval($value));
+    }
+
     /**
      * Get the view / contents that represent the component.
      *
@@ -27,7 +32,7 @@ class Checkbox extends AbstractComponent
      */
     public function render()
     {
-        return view('bread::components.checkbox', [
+        return view($this->components . '.checkbox', [
             'label' => $this->label,
             'name' => $this->name,
             'checkbox' => $this->checkbox,

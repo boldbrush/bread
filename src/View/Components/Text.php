@@ -20,6 +20,11 @@ class Text extends AbstractComponent
         $this->text = $text;
     }
 
+    public static function factory(string $name, string $label, $value = null): Component
+    {
+        return new self($name, $label, strval($value));
+    }
+
     /**
      * Get the view / contents that represent the component.
      *
@@ -27,7 +32,7 @@ class Text extends AbstractComponent
      */
     public function render()
     {
-        return view('bread::components.text', [
+        return view($this->components . '.text', [
             'label' => $this->label,
             'name' => $this->name,
             'text' => $this->text,

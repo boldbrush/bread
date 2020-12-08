@@ -7,7 +7,7 @@ namespace BoldBrush\Bread;
 use BoldBrush\Bread\Config\Initializer;
 use BoldBrush\Bread\Exception;
 use BoldBrush\Bread\Field\Config\Config;
-use BoldBrush\Bread\Field\Container;
+use BoldBrush\Bread\Field\FieldContainer;
 use BoldBrush\Bread\Helper\Route\Builder;
 use BoldBrush\Bread\Model\Metadata;
 use BoldBrush\Bread\Page\Page;
@@ -43,7 +43,7 @@ class Bread
     /** @var Page $page */
     protected $page;
 
-    /** @var Container $fields */
+    /** @var FieldContainer $fields */
     protected $fields;
 
     /** @var string $layout */
@@ -51,6 +51,9 @@ class Bread
 
     /** @var string $view */
     protected $view;
+
+    /** @var array  */
+    protected $global;
 
     /**
      * @param array $config
@@ -61,8 +64,10 @@ class Bread
     {
         (new Initializer($config, $this))->init();
 
-        $this->page = new Page();
-        $this->setFields(new Container());
+        $this->global = config('bread');
+
+        $this->setPage(new Page())
+            ->setFields(new FieldContainer());
     }
 
     /*
@@ -85,9 +90,16 @@ class Bread
 
         $model = $this->model;
         $query = $this->getQueryCallable();
+        $connectionName = $this->getModelMetadata()->getConnectionName();
 
         if (is_callable($query)) {
-            $query = $query($model, DB::table($this->modelMetadata->getTable()), DB::query());
+            $query = $query(
+                $model,
+                DB::connection($connectionName)
+                    ->table($this->getModelMetadata()
+                    ->getTable()),
+                DB::query()
+            );
             $paginator = $query->paginate();
         } elseif (is_array($this->select) && count($this->select) > 0) {
             $paginator = $model::select($this->select)->paginate();
@@ -106,9 +118,30 @@ class Bread
     public function read(?int $id = null): string
     {
         $this->checkIfModelHasBeenSetup();
+
+        $model = $this->model;
+        $pk = $this->getModelMetadata()->getPrimaryKeyName();
+        $query = $this->getQueryCallable();
+        $connectionName = $this->getModelMetadata()->getConnectionName();
+
         $this->checkIfIdentifierCanBeNull($id);
 
-        throw new \Exception("This method (" . __METHOD__ . ") needs to be implemented", 500);
+        if (is_callable($query)) {
+            $query = $query(
+                $model,
+                DB::connection($connectionName)
+                    ->table($this->getModelMetadata()
+                    ->getTable()),
+                DB::query()
+            );
+            $model = $query->first();
+        } elseif (is_array($this->select) && count($this->select) > 0) {
+            $model = $model::select($this->select)->where($pk, $id)->first();
+        } else {
+            $model = $model::find($id);
+        }
+
+        return (new View\Reader($this, $model))->render();
     }
 
     /**
@@ -121,7 +154,27 @@ class Bread
         $this->checkIfModelHasBeenSetup();
         $this->checkIfIdentifierCanBeNull($id);
 
-        throw new \Exception("This method (" . __METHOD__ . ") needs to be implemented", 500);
+        $model = $this->model;
+        $pk = $this->getModelMetadata()->getPrimaryKeyName();
+        $query = $this->getQueryCallable();
+        $connectionName = $this->getModelMetadata()->getConnectionName();
+
+        if (is_callable($query)) {
+            $query = $query(
+                $model,
+                DB::connection($connectionName)
+                    ->table($this->getModelMetadata()
+                    ->getTable()),
+                DB::query()
+            );
+            $model = $query->first();
+        } elseif (is_array($this->select) && count($this->select) > 0) {
+            $model = $model::select($this->select)->where($pk, $id)->first();
+        } else {
+            $model = $model::find($id);
+        }
+
+        return (new View\Editor($this, $model))->render();
     }
 
     /**
@@ -141,12 +194,23 @@ class Bread
      *
      * This will delete a record.
      */
-    public function delete(?int $id = null)
+    public function delete(int $id)
     {
         $this->checkIfModelHasBeenSetup();
         $this->checkIfIdentifierCanBeNull($id);
 
-        throw new \Exception("This method (" . __METHOD__ . ") needs to be implemented", 500);
+        $model = $this->model;
+        $pk = $this->getModelMetadata()->getPrimaryKeyName();
+
+        $model::find($id)->delete();
+
+        $routeBuilder = new Builder($this->actionLinks(), $pk);
+
+        if ($routeBuilder->hasBrowseRoute()) {
+            return redirect($routeBuilder->browse());
+        }
+
+        return redirect(request()->headers->get('referer'));
     }
 
     /*
@@ -157,6 +221,13 @@ class Bread
     | All the DSL methods that help us configure the expected output.
     |
     */
+
+    public function setPage(Page $page): self
+    {
+        $this->page = $page;
+
+        return $this;
+    }
 
     /**
      * Set Eloquent model.
@@ -171,12 +242,12 @@ class Bread
 
         $this->setConnectionConfigForModel();
 
-        $this->model = $this->modelMetadata->getModelClass();
+        $this->model = $this->getModelMetadata()->getModelClass();
 
         return $this;
     }
 
-    public function configureFields(string $for = Container::GENERAL): Config
+    public function configureFields(string $for = FieldContainer::GENERAL): Config
     {
         return new Config($for, $this->getFields()->for($for), $this);
     }
@@ -291,7 +362,7 @@ class Bread
         $this->checkIfModelHasBeenSetup();
 
         $model = $this->model;
-        $pk = $this->modelData->getPrimaryKeyName();
+        $pk = $this->getModelMetadata()->getPrimaryKeyName();
         $query = $this->getQueryCallable();
 
         if (!is_callable($query) && $id === null) {
@@ -299,7 +370,7 @@ class Bread
         }
 
         if (is_callable($query)) {
-            $query = $query($model, DB::table($this->modelData->getTable()), DB::query());
+            $query = $query($model, DB::table($this->getModelMetadata()->getTable()), DB::query());
             $model = $query->first();
         } elseif (is_array($this->select) && count($this->select) > 0) {
             $model = $model::select($this->select)->where($pk, $id)->first();
@@ -324,7 +395,7 @@ class Bread
 
         $platform = $sm->getDatabasePlatform();
 
-        $columns = $sm->listTableColumns($this->modelData->getTable());
+        $columns = $sm->listTableColumns($this->getModelMetadata()->getTable());
 
         foreach ($columns as $column) {
             if (isset($data[$column->getName()])) {
@@ -348,7 +419,7 @@ class Bread
         return back();
     }
 
-    public function getFields(): Container
+    public function getFields(): FieldContainer
     {
         return $this->fields;
     }
@@ -366,6 +437,21 @@ class Bread
     public function getView(): ?string
     {
         return $this->view;
+    }
+
+    public function globalLayout(): string
+    {
+        return  $this->global['theme'] . '.' . $this->global['layout'];
+    }
+
+    public function globalView(string $for): string
+    {
+        return  $this->global['theme'] . '.' . $this->global['view'][$for];
+    }
+
+    public function globalComponents(): string
+    {
+        return  $this->global['theme'] . '.components';
     }
 
     public function actionLinks(): ?array
@@ -393,7 +479,7 @@ class Bread
         return $this->query;
     }
 
-    public function setFields(Container $fields): self
+    public function setFields(FieldContainer $fields): self
     {
         $this->fields = $fields;
 

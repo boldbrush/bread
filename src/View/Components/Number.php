@@ -2,7 +2,7 @@
 
 namespace BoldBrush\Bread\View\Components;
 
-use BoldBrush\Bread\View\Components\AbstractComponent;
+use Illuminate\View\Component;
 
 class Number extends AbstractComponent
 {
@@ -20,6 +20,11 @@ class Number extends AbstractComponent
         $this->number = $number;
     }
 
+    public static function factory(string $name, string $label, $value = null): Component
+    {
+        return new self($name, $label, intval($value));
+    }
+
     /**
      * Get the view / contents that represent the component.
      *
@@ -27,7 +32,7 @@ class Number extends AbstractComponent
      */
     public function render()
     {
-        return view('bread::components.number', [
+        return view($this->components . '.number', [
             'label' => $this->label,
             'name' => $this->name,
             'number' => $this->number,

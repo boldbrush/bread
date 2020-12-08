@@ -5,7 +5,7 @@ namespace BoldBrush\Bread\Test;
 use BoldBrush\Bread\Bread;
 use BoldBrush\Bread\Exception;
 use BoldBrush\Bread\Field;
-use BoldBrush\Bread\Field\Container;
+use BoldBrush\Bread\Field\FieldContainer;
 use BoldBrush\Bread\Test\App\Model;
 use BoldBrush\Bread\Test\TestCase;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
@@ -63,7 +63,7 @@ class BreadTest extends TestCase
     {
         $path = '/edit/{{id}}';
         $bread = (new Bread())->model(Model\User::class)
-            ->configureFields(Container::BROWSE)
+            ->configureFields(FieldContainer::BROWSE)
                 ->field('id')
                 ->field('email')
                     ->editable(false)
@@ -84,10 +84,10 @@ class BreadTest extends TestCase
 
         $this->assertSame(
             ['id', 'email'],
-            array_keys($bread->getFields()->for(Container::BROWSE)->toArray())
+            array_keys($bread->getFields()->for(FieldContainer::BROWSE)->toArray())
         );
 
-        foreach ($bread->getFields()->for(Container::BROWSE)->toArray() as $field) {
+        foreach ($bread->getFields()->for(FieldContainer::BROWSE)->toArray() as $field) {
             $this->assertInstanceOf(Field\Field::class, $field);
         }
     }
@@ -131,7 +131,7 @@ class BreadTest extends TestCase
     {
 
         $bread = (new Bread())->model(Model\User::class)
-            ->configureFields(Container::BROWSE)
+            ->configureFields(FieldContainer::BROWSE)
                 ->field('id')
                     ->visible(false)
             ->bread();
@@ -148,7 +148,7 @@ class BreadTest extends TestCase
             ->query(function ($model, $queryBuilder, $rawQueryBuilder) {
                 return  $model::select(['id', 'username'])->where('id', '>', 0);
             })
-            ->configureFields(Container::BROWSE)
+            ->configureFields(FieldContainer::BROWSE)
                 ->field('id')
                     ->visible(false)
             ->bread();
@@ -163,7 +163,7 @@ class BreadTest extends TestCase
     {
         $bread = (new Bread())->model(Model\User::class)
             ->select(['id', 'username'])
-            ->configureFields(Container::BROWSE)
+            ->configureFields(FieldContainer::BROWSE)
                 ->field('id')
                     ->visible(false)
             ->bread();
