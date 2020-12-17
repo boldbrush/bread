@@ -7,6 +7,7 @@ namespace BoldBrush\Bread;
 use BoldBrush\Bread\Config\Initializer;
 use BoldBrush\Bread\Exception;
 use BoldBrush\Bread\Field\Config\Config;
+use BoldBrush\Bread\Field\Field;
 use BoldBrush\Bread\Field\FieldContainer;
 use BoldBrush\Bread\Helper\Route\Builder;
 use BoldBrush\Bread\Model\Metadata;
@@ -14,7 +15,10 @@ use BoldBrush\Bread\Page\Page;
 use BoldBrush\Bread\View;
 use BoldBrush\Bread\System\Database\ConnectionManager;
 use Doctrine\DBAL\Connection;
+use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class Bread
@@ -52,8 +56,14 @@ class Bread
     /** @var string $view */
     protected $view;
 
-    /** @var array  */
+    /** @var Repository  */
     protected $global;
+
+    /** @var Request  */
+    protected $request;
+
+    /** @var Response  */
+    protected $response;
 
     /**
      * @param array $config
@@ -64,10 +74,12 @@ class Bread
     {
         (new Initializer($config, $this))->init();
 
-        $this->global = config('bread');
+        $this->global = new Repository(config('bread'));
 
         $this->setPage(new Page())
-            ->setFields(new FieldContainer());
+            ->setFields(new FieldContainer())
+            ->request(app(Request::class))
+            ->response(app(Response::class));
     }
 
     /*
@@ -91,6 +103,10 @@ class Bread
         $model = $this->model;
         $query = $this->getQueryCallable();
         $connectionName = $this->getModelMetadata()->getConnectionName();
+
+        if ($this->checkIsSearchRequest()) {
+            return $this->search();
+        }
 
         if (is_callable($query)) {
             $query = $query(
@@ -186,7 +202,9 @@ class Bread
     {
         $this->checkIfModelHasBeenSetup();
 
-        throw new \Exception("This method (" . __METHOD__ . ") needs to be implemented", 500);
+        $model = $this->model;
+
+        return (new View\Adder($this, new $model()))->render();
     }
 
     /**
@@ -221,6 +239,20 @@ class Bread
     | All the DSL methods that help us configure the expected output.
     |
     */
+
+    public function request(Request $request): self
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    public function response(Response $response): self
+    {
+        $this->response = $response;
+
+        return $this;
+    }
 
     public function setPage(Page $page): self
     {
@@ -357,6 +389,57 @@ class Bread
     |
     */
 
+
+    public function create(?array $data = [])
+    {
+        $this->checkIfModelHasBeenSetup();
+
+        $model = $this->model;
+        $model = new $model();
+
+        $pk = $this->getModelMetadata()->getPrimaryKeyName();
+
+        if (isset($data['_token'])) {
+            unset($data['_token']);
+        }
+
+        /**
+         * Make sure we don't try to create a model with a set PK
+         */
+        if (isset($data[$pk])) {
+            unset($data[$pk]);
+        }
+
+        $sm = $this
+            ->getConnectionConfigForModel()
+            ->getSchemaManager();
+
+        $platform = $sm->getDatabasePlatform();
+
+        $columns = $sm->listTableColumns($this->getModelMetadata()->getTable());
+
+        foreach ($columns as $column) {
+            if (isset($data[$column->getName()])) {
+                $data[$column->getName()] = $column->getType()
+                    ->convertToPHPValue($data[$column->getName()], $platform);
+            }
+        }
+
+        foreach ($data as $attribute => $value) {
+            $model->$attribute = $value;
+        }
+
+        $model->save($data);
+
+        $routeBuilder = new Builder($this->actionLinks());
+
+        if ($routeBuilder->hasBrowseRoute()) {
+            return redirect($routeBuilder->browse());
+        }
+
+        return back();
+    }
+
     public function save(?int $id = null, ?array $data = [])
     {
         $this->checkIfModelHasBeenSetup();
@@ -419,6 +502,68 @@ class Bread
         return back();
     }
 
+    protected function checkIsSearchRequest(): bool
+    {
+        $searchParamName = $this->global()->get('search.term', 's');
+        $term = strval($this->request->query($searchParamName));
+
+        return !empty($term) === false ? false : true;
+    }
+
+    protected function search()
+    {
+        $fields = $this->getFields()
+            ->for(FieldContainer::BROWSE)
+            ->toArray();
+        $sm = $this
+            ->getConnectionConfigForModel()
+            ->getSchemaManager();
+
+        $columns = $sm->listTableColumns($this->getModelMetadata()->getTable());
+
+        foreach ($columns as $column) {
+            if (isset($fields[$column->getName()])) {
+                $fields[$column->getName()]
+                    ->setType($column->getType()->getName());
+            } else {
+                $fields[$column->getName()] = (new  Field($column->getName()))
+                    ->setType($column->getType()->getName());
+            }
+        }
+
+        $searchable = [];
+
+        foreach ($fields as $name => $field) {
+            if ($field->isSearchable()) {
+                $searchable[] = $name;
+            }
+        }
+
+        $model = $this->model;
+        $query = $this->getQueryCallable();
+        $connectionName = $this->getModelMetadata()->getConnectionName();
+
+        $searchParamName = $this->global()->get('search.term', 's');
+        $term = $this->request->query($searchParamName, false);
+
+        if (is_callable($query)) {
+            $query = $query(
+                $model,
+                DB::connection($connectionName)
+                    ->table($this->getModelMetadata()
+                    ->getTable()),
+                DB::query()
+            );
+            $paginator = $query->whereLikeBread($searchable, $term)->paginate();
+        } elseif (is_array($this->select) && count($this->select) > 0) {
+            $paginator = $model::select($this->select)->whereLikeBread($searchable, $term)->paginate();
+        } else {
+            $paginator = $model::whereLikeBread($searchable, $term)->paginate();
+        }
+
+        return (new View\Browser($this, $paginator))->render();
+    }
+
     public function getFields(): FieldContainer
     {
         return $this->fields;
@@ -441,17 +586,17 @@ class Bread
 
     public function globalLayout(): string
     {
-        return  $this->global['theme'] . '.' . $this->global['layout'];
+        return  $this->global()->get('theme') . '.' . $this->global()->get('layout');
     }
 
     public function globalView(string $for): string
     {
-        return  $this->global['theme'] . '.' . $this->global['view'][$for];
+        return  $this->global()->get('theme') . '.' . $this->global()->get('view.' . $for);
     }
 
     public function globalComponents(): string
     {
-        return  $this->global['theme'] . '.components';
+        return  $this->global()->get('theme') . '.components';
     }
 
     public function actionLinks(): ?array
@@ -477,6 +622,11 @@ class Bread
     protected function getQueryCallable(): ?callable
     {
         return $this->query;
+    }
+
+    public function global(): Repository
+    {
+        return $this->global;
     }
 
     public function setFields(FieldContainer $fields): self

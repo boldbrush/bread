@@ -7,13 +7,11 @@ namespace BoldBrush\Bread\View;
 use BoldBrush\Bread\Bread;
 use BoldBrush\Bread\Field\FieldContainer;
 
-class Reader extends Renderer
+class Adder extends Renderer
 {
-    protected $model;
-
     public function __construct(Bread $bread, object $model)
     {
-        parent::__construct($bread, $bread->getFields()->for(FieldContainer::READ)->toArray());
+        parent::__construct($bread, $bread->getFields()->for(FieldContainer::ADD)->toArray());
 
         $this->model = $model;
 
@@ -23,10 +21,10 @@ class Reader extends Renderer
     public function render(): string
     {
         $layout = $this->layout() ?? $this->bread->globalLayout();
-        $view = $this->view() ?? $this->bread->globalView(FieldContainer::READ);
+        $view = $this->view() ?? $this->bread->globalView(FieldContainer::ADD);
 
         $view = view($view, [
-            'reader' => $this,
+            'adder' => $this,
             'layout' => $layout,
         ]);
 

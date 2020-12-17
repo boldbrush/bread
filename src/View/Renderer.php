@@ -155,4 +155,9 @@ abstract class Renderer implements RendererInterface
     {
         return $this->model;
     }
+
+    public function bread(): Bread
+    {
+        return $this->bread;
+    }
 }

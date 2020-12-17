@@ -104,6 +104,18 @@ class BreadTest extends TestCase
         $view = (new Bread())->model(Model\User::class)->edit();
     }
 
+    public function testEditIdentifierCannotBeNullPass()
+    {
+        $user = Model\User::factory()->make();
+        $user->save();
+
+        $view = (new Bread())->model(Model\User::class)
+            ->actionLink('edit', '/edit/:id')
+            ->edit($user->id);
+
+        $this->assertStringContainsString('<form', $view);
+    }
+
     public function testGetActionLinks()
     {
         $user = Model\User::factory()->make();
@@ -129,7 +141,6 @@ class BreadTest extends TestCase
 
     public function testBrowseBrowseNoData()
     {
-
         $bread = (new Bread())->model(Model\User::class)
             ->configureFields(FieldContainer::BROWSE)
                 ->field('id')
@@ -180,7 +191,6 @@ class BreadTest extends TestCase
         $user->name = 'Adro Rocker';
         $user->email = 'me@adro.rocks';
         $user->password = '123456';
-
         $user->save();
 
         $bread = (new Bread())->model(Model\User::class);
@@ -190,5 +200,26 @@ class BreadTest extends TestCase
         $this->assertInstanceOf(Bread::class, $bread);
         $this->assertStringContainsString('Adro Rocker', $view);
         $this->assertStringContainsString('Id', $view);
+    }
+
+    public function testEditView()
+    {
+        $user = Model\User::factory()->make();
+        $user->save();
+
+        $view = (new Bread())
+            ->model(Model\User::class)
+            ->edit($user->id);
+
+        $this->assertStringContainsString($user->name, $view);
+    }
+
+    public function testAddView()
+    {
+        $view = (new Bread())
+            ->model(Model\User::class)
+            ->add();
+
+        $this->assertStringContainsString('<form', $view);
     }
 }

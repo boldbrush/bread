@@ -6,6 +6,20 @@
 <h1>
     {{ $browser->title() }}
 </h1>
+@if ($browser->routeBuilder()->hasAddRoute())
+<hr>
+<a class="inline-block" href="{{ $browser->routeBuilder()->add() }}">
+    <svg style="display:inline-block" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+    </svg> Add new
+</a>
+<hr>
+@endif
+
+<form action="">
+    <input name="{{ $browser->searchTerm() }}" placeholder="search.." type="text" /> <button type="submit">Search</button>
+</form>
+
 @if ($browser->count() === 0)
 No data found!
 @else

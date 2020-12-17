@@ -10,8 +10,8 @@
 <hr>
 
 @foreach ($reader->getFields() as $field)
-    @if ($field->isVisible() && $field->isEditable())
-        {!! $field->render($editor->getModel()->{$field->getName()}) !!} <br>
+    @if ($field->isVisible())
+        {{ $field->label() }} : {{ $reader->getModel()->{$field->getName()} }} <br>
     @endif
 @endforeach
 

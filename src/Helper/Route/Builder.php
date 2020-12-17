@@ -35,7 +35,7 @@ class Builder
         }
 
         if (isset($routes['add'])) {
-            $this->setAddRoute($routes['delete']);
+            $this->setAddRoute($routes['add']);
         }
 
         if (isset($routes['delete'])) {

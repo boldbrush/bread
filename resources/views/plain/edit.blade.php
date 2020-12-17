@@ -12,7 +12,7 @@
 <form action="{{ $editor->routeBuilder()->save($editor->getModel()) }}" method="post">
     @csrf
     @foreach ($editor->getFields() as $field)
-        @if ($field->isVisible())
+        @if ($field->isVisible()  && $field->isEditable())
             {!! $field->render($editor->getModel()->{$field->getName()}) !!} <br>
         @endif
     @endforeach

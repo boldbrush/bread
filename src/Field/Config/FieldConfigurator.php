@@ -108,8 +108,6 @@ class FieldConfigurator
 
     public function bread(): Bread
     {
-        $this->fields->put($this->field->getName(), $this->field);
-
-        return $this->config->bread();
+        return $this->back()->bread();
     }
 }

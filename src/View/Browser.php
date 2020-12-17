@@ -36,8 +36,6 @@ class Browser extends Renderer
         $layout = $this->layout() ?? $this->bread->globalLayout();
         $view = $this->view() ?? $this->bread->globalView(FieldContainer::BROWSE);
 
-        // dd($layout, $view);
-
         $view = view($view, [
             'browser' => $this,
             'layout' => $layout,
@@ -131,5 +129,10 @@ class Browser extends Renderer
         });
 
         return $headers->toArray();
+    }
+
+    public function searchTerm(): string
+    {
+        return $this->bread()->global()->get('search.term', 's');
     }
 }

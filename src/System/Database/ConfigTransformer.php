@@ -14,10 +14,10 @@ class ConfigTransformer
             case $config['driver'] === 'sqlite':
                 return [
                     'driver' => 'pdo_' . $config['driver'],
-                    'user' => isset($config['user']) ? $config['user'] : null,
-                    'password' => isset($config['password']) ? $config['password'] : null,
+                    // 'user' => isset($config['user']) ? $config['user'] : null,
+                    // 'password' => isset($config['password']) ? $config['password'] : null,
                     'path' => $config['database'],
-                    'memory' => isset($config['memory']) ? $config['memory'] : null,
+                    // 'memory' => isset($config['memory']) ? $config['memory'] : null,
                 ];
                 break;
             case $config['driver'] === 'mysql':
