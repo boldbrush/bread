@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace BoldBrush\Bread\Provider;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
@@ -44,23 +45,48 @@ class BreadServiceProvider extends ServiceProvider
 
         Blade::componentNamespace('BoldBrush\\Bread\\Views\\Components', 'bread');
 
-        Builder::macro('whereLikeBread', function ($attributes, string $searchTerm) {
+        EloquentBuilder::macro('whereLikeBread', function ($attributes, string $searchTerm) {
             /** @var Builder $this */
-            $this->where(function (Builder $query) use ($attributes, $searchTerm) {
+            $this->where(function (EloquentBuilder $query) use ($attributes, $searchTerm) {
                 foreach (Arr::wrap($attributes) as $attribute) {
                     $query->when(
                         Str::contains($attribute, '.'),
-                        function (Builder $query) use ($attribute, $searchTerm) {
+                        function (EloquentBuilder $query) use ($attribute, $searchTerm) {
                             [$relationName, $relationAttribute] = explode('.', $attribute);
 
                             $query->orWhereHas(
                                 $relationName,
-                                function (Builder $query) use ($relationAttribute, $searchTerm) {
+                                function (EloquentBuilder $query) use ($relationAttribute, $searchTerm) {
                                     $query->where($relationAttribute, 'LIKE', "%{$searchTerm}%");
                                 }
                             );
                         },
-                        function (Builder $query) use ($attribute, $searchTerm) {
+                        function (EloquentBuilder $query) use ($attribute, $searchTerm) {
+                            $query->orWhere($attribute, 'LIKE', "%{$searchTerm}%");
+                        }
+                    );
+                }
+            });
+
+            return $this;
+        });
+        QueryBuilder::macro('whereLikeBread', function ($attributes, string $searchTerm) {
+            /** @var Builder $this */
+            $this->where(function (QueryBuilder $query) use ($attributes, $searchTerm) {
+                foreach (Arr::wrap($attributes) as $attribute) {
+                    $query->when(
+                        Str::contains($attribute, '.'),
+                        function (QueryBuilder $query) use ($attribute, $searchTerm) {
+                            [$relationName, $relationAttribute] = explode('.', $attribute);
+
+                            $query->orWhereHas(
+                                $relationName,
+                                function (QueryBuilder $query) use ($relationAttribute, $searchTerm) {
+                                    $query->where($relationAttribute, 'LIKE', "%{$searchTerm}%");
+                                }
+                            );
+                        },
+                        function (QueryBuilder $query) use ($attribute, $searchTerm) {
                             $query->orWhere($attribute, 'LIKE', "%{$searchTerm}%");
                         }
                     );
