@@ -72,14 +72,14 @@ class Bread
      */
     public function __construct(?array $config = null)
     {
-        (new Initializer($config, $this))->init();
-
         $this->global = new Repository(config('bread'));
 
         $this->setPage(new Page())
             ->setFields(new FieldContainer())
             ->request(app(Request::class))
             ->response(app(Response::class));
+
+        (new Initializer($config, $this))->init();
     }
 
     /*
@@ -104,6 +104,8 @@ class Bread
         $query = $this->getQueryCallable();
         $connectionName = $this->getModelMetadata()->getConnectionName();
 
+        $perPage = $this->request->query('perPage', $this->perPage);
+
         if ($this->checkIsSearchRequest()) {
             return $this->search();
         }
@@ -116,14 +118,14 @@ class Bread
                     ->getTable()),
                 DB::query()
             );
-            $paginator = $query->paginate();
+            $paginator = $query->paginate($perPage);
         } elseif (is_array($this->select) && count($this->select) > 0) {
-            $paginator = $model::select($this->select)->paginate();
+            $paginator = $model::select($this->select)->paginate($perPage);
         } else {
-            $paginator = $model::paginate();
+            $paginator = $model::paginate($perPage);
         }
 
-        return (new View\Browser($this, $paginator))->render();
+        return (new View\Browser($this, $paginator->withQueryString()))->render();
     }
 
     /**
@@ -545,6 +547,7 @@ class Bread
 
         $searchParamName = $this->global()->get('search.term', 's');
         $term = $this->request->query($searchParamName, false);
+        $perPage = $this->request->query('perPage', $this->perPage);
 
         if (is_callable($query)) {
             $query = $query(
@@ -554,11 +557,11 @@ class Bread
                     ->getTable()),
                 DB::query()
             );
-            $paginator = $query->whereLikeBread($searchable, $term)->paginate();
+            $paginator = $query->whereLikeBread($searchable, $term)->paginate($perPage);
         } elseif (is_array($this->select) && count($this->select) > 0) {
-            $paginator = $model::select($this->select)->whereLikeBread($searchable, $term)->paginate();
+            $paginator = $model::select($this->select)->whereLikeBread($searchable, $term)->paginate($perPage);
         } else {
-            $paginator = $model::whereLikeBread($searchable, $term)->paginate();
+            $paginator = $model::whereLikeBread($searchable, $term)->paginate($perPage);
         }
 
         return (new View\Browser($this, $paginator))->render();

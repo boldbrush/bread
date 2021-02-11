@@ -24,7 +24,10 @@ class FieldToInputTypeMapper
         'string' => Components\Text::class,
         'ascii_string' => Components\Text::class,
         'text' => Components\Text::class,
+        'ntext' => Components\NoLength\Text::class,
         'guid' => Components\Text::class,
+        'enum' => Components\Select::class,
+        'select' => Components\Select::class,
     ];
 
     public static function getInputType(string $type): string

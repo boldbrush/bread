@@ -32,6 +32,8 @@ class Field implements FieldInterface
 
     protected $component;
 
+    protected $length = null;
+
     public function __construct(string $name)
     {
         $this->setName($name);
@@ -95,6 +97,18 @@ class Field implements FieldInterface
         return $this;
     }
 
+    public function setLength(?int $length): FieldInterface
+    {
+        $this->length = $length;
+
+        return $this;
+    }
+
+    public function getLength(): ?int
+    {
+        return $this->length;
+    }
+
     public function setCustomElementAfter(callable $function): FieldInterface
     {
         $this->customElementAfter = $function;
@@ -107,6 +121,11 @@ class Field implements FieldInterface
         $this->dataSource = $function;
 
         return $this;
+    }
+
+    public function getDataSource(): callable
+    {
+        return $this->dataSource;
     }
 
     public function getName(): string
@@ -134,7 +153,7 @@ class Field implements FieldInterface
         return boolval($this->searchable);
     }
 
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -163,7 +182,7 @@ class Field implements FieldInterface
     public function render($value): string
     {
         $component = $this->component;
-        $component = $component::factory($this->getName(), $this->label(), $value);
+        $component = $component::factory($this->getName(), $this->label(), $this, $value);
 
         return strval($component->render());
     }

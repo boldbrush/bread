@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BoldBrush\Bread\Config;
 
 use BoldBrush\Bread\Bread;
+use BoldBrush\Bread\Config\Resolver;
 use Throwable;
 
 class Initializer
@@ -14,6 +15,10 @@ class Initializer
 
     /** @var Bread $bread */
     private $bread = null;
+
+    protected $map = [
+        'fields' => Resolver\FieldResolver::class,
+    ];
 
     public function __construct(?array $config, Bread &$bread)
     {
@@ -38,6 +43,11 @@ class Initializer
 
     protected function resolve(string $method, $value): bool
     {
-        return true;
+        if (isset($this->map[$method])) {
+            $resolver = $this->map[$method];
+            return (new $resolver($value, $this->bread))->resolve();
+        }
+
+        return false;
     }
 }
