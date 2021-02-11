@@ -2,6 +2,7 @@
 
 namespace BoldBrush\Bread\View\Components;
 
+use BoldBrush\Bread\Field\Field;
 use Illuminate\View\Component;
 
 class Number extends AbstractComponent
@@ -13,16 +14,16 @@ class Number extends AbstractComponent
      *
      * @return void
      */
-    public function __construct(string $name, string $label, ?int $number)
+    public function __construct(string $name, string $label, Field $field, ?int $number)
     {
-        parent::__construct($name, $label);
+        parent::__construct($name, $label, $field);
 
         $this->number = $number;
     }
 
-    public static function factory(string $name, string $label, $value = null): Component
+    public static function factory(string $name, string $label, Field $field, $value = null): Component
     {
-        return new self($name, $label, intval($value));
+        return new self($name, $label, $field, intval($value));
     }
 
     /**

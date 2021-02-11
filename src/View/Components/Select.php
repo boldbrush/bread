@@ -4,26 +4,27 @@ namespace BoldBrush\Bread\View\Components;
 
 use BoldBrush\Bread\Field\Field;
 use Illuminate\View\Component;
+use InvalidArgumentException;
 
-class Date extends AbstractComponent
+class Select extends AbstractComponent
 {
-    protected $date;
+    protected $selected;
 
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct(string $name, string $label, Field $field, ?string $date)
+    public function __construct(string $name, string $label, Field $field, $selected = null)
     {
         parent::__construct($name, $label, $field);
 
-        $this->date = $date;
+        $this->selected = $selected;
     }
 
     public static function factory(string $name, string $label, Field $field, $value = null): Component
     {
-        return new self($name, $label, $field, strval($value));
+        return new self($name, $label, $field, $value);
     }
 
     /**
@@ -33,10 +34,13 @@ class Date extends AbstractComponent
      */
     public function render()
     {
-        return view($this->components . '.date', [
+        $dataSource = $this->field->getDataSource();
+
+        return view($this->components . '.select', [
             'label' => $this->label,
             'name' => $this->name,
-            'date' => $this->date,
+            'selected' => $this->selected,
+            'options' => $dataSource(),
         ]);
     }
 }

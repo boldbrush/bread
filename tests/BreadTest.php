@@ -14,7 +14,22 @@ class BreadTest extends TestCase
 {
     public function testInstance()
     {
-        $bread = new Bread();
+        $bread = new Bread([
+            'fields' => [
+                'role' => [
+                    'editable' => false,
+                    'visible' => true,
+                    'sortable' => false,
+                    'searchable' => true,
+                    'helpText' => "This is the help text for the title",
+                    'default' => "Default Title Value goes here",
+                    'type' => 'text',
+                    'dataSource' => function () {
+                        return ['guest', 'editor', 'admin'];
+                    },
+                ],
+            ],
+        ]);
 
         $this->assertInstanceOf(Bread::class, $bread);
     }

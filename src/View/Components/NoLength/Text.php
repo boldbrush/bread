@@ -1,31 +1,17 @@
 <?php
 
-namespace BoldBrush\Bread\View\Components;
+namespace BoldBrush\Bread\View\Components\NoLength;
 
 use BoldBrush\Bread\Field\Field;
+use BoldBrush\Bread\View\Components\Text as ParentText;
 use Illuminate\View\Component;
 
-class Date extends AbstractComponent
+class Text extends ParentText
 {
-    protected $date;
-
-    /**
-     * Create a new component instance.
-     *
-     * @return void
-     */
-    public function __construct(string $name, string $label, Field $field, ?string $date)
-    {
-        parent::__construct($name, $label, $field);
-
-        $this->date = $date;
-    }
-
     public static function factory(string $name, string $label, Field $field, $value = null): Component
     {
         return new self($name, $label, $field, strval($value));
     }
-
     /**
      * Get the view / contents that represent the component.
      *
@@ -33,10 +19,10 @@ class Date extends AbstractComponent
      */
     public function render()
     {
-        return view($this->components . '.date', [
+        return view($this->components . '.nolength.text', [
             'label' => $this->label,
             'name' => $this->name,
-            'date' => $this->date,
+            'text' => $this->text,
         ]);
     }
 }

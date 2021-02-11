@@ -120,9 +120,13 @@ abstract class Renderer implements RendererInterface
         foreach ($columns as $column) {
             if (isset($this->fields[$column->getName()])) {
                 $this->fields[$column->getName()]
-                    ->setType($column->getType()->getName());
+                    ->setLength($column->getLength());
+                if (!is_string($this->fields[$column->getName()]->getType())) {
+                    $this->fields[$column->getName()]->setType($column->getType()->getName());
+                }
             } else {
                 $this->fields[$column->getName()] = (new Field($column->getName()))
+                    ->setLength($column->getLength())
                     ->setType($column->getType()->getName());
             }
         }

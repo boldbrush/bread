@@ -2,6 +2,7 @@
 
 namespace BoldBrush\Bread\View\Components;
 
+use BoldBrush\Bread\Field\Field;
 use Illuminate\View\Component;
 
 class Text extends AbstractComponent
@@ -13,16 +14,16 @@ class Text extends AbstractComponent
      *
      * @return void
      */
-    public function __construct(string $name, string $label, ?string $text)
+    public function __construct(string $name, string $label, Field $field, ?string $text)
     {
-        parent::__construct($name, $label);
+        parent::__construct($name, $label, $field);
 
         $this->text = $text;
     }
 
-    public static function factory(string $name, string $label, $value = null): Component
+    public static function factory(string $name, string $label, Field $field, $value = null): Component
     {
-        return new self($name, $label, strval($value));
+        return new self($name, $label, $field, strval($value));
     }
 
     /**
@@ -36,6 +37,7 @@ class Text extends AbstractComponent
             'label' => $this->label,
             'name' => $this->name,
             'text' => $this->text,
+            'maxlength' => $this->field->getLength(),
         ]);
     }
 }
