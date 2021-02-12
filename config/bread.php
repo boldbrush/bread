@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'theme' => 'bread::plain',
-    'layout' => 'master',
+    'theme' => env('BREAD.THEME', 'bread::tailwind'),
+    'layout' => env('BREAD.LAYOUT', 'master'),
     'view' => [
-        'browse' => 'browse',
-        'read' => 'read',
-        'edit' => 'edit',
-        'add' => 'add',
+        'browse' => env('BREAD.VIEW.BROWSE', 'browse'),
+        'read' => env('BREAD.VIEW.READ', 'read'),
+        'edit' => env('BREAD.VIEW.EDIT', 'edit'),
+        'add' => env('BREAD.VIEW.ADD', 'add'),
     ],
 ];

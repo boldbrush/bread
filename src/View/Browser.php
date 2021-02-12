@@ -135,4 +135,9 @@ class Browser extends Renderer
     {
         return $this->bread()->global()->get('search.term', 's');
     }
+
+    public function perPageFomRequest(): int
+    {
+        return $this->bread()->perPageFomRequest();
+    }
 }

@@ -104,7 +104,7 @@ class Bread
         $query = $this->getQueryCallable();
         $connectionName = $this->getModelMetadata()->getConnectionName();
 
-        $perPage = $this->request->query('perPage', $this->perPage);
+        $perPage = $this->perPageFomRequest();
 
         if ($this->checkIsSearchRequest()) {
             return $this->search();
@@ -390,6 +390,11 @@ class Bread
     | All the Internal methods that run behind the scenes.
     |
     */
+
+    public function perPageFomRequest(): int
+    {
+        return intval($this->request->query('perPage', $this->perPage));
+    }
 
 
     public function create(?array $data = [])
