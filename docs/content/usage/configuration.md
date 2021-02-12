@@ -1,5 +1,8 @@
 # Configuration
 
+The bread package have two ways to configure its behavior.  
+
+
 ```php
 <?php
 

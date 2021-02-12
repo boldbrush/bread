@@ -14,9 +14,9 @@ You may use Composer to install the BREAD package into your Laravel project:
 composer require boldbrush/bread
 ```
 
-## Simple Examples
+## Simple Example
 
-Bare bone browse/list view.
+Bare bones browse/list view.
 
 ```php
 <?php
@@ -43,3 +43,11 @@ Route::get('/users', function () {
         ->browse();
 });
 ```
+
+This will yield a similar result like below
+
+!> The image below shows sample data
+
+<p class="in-center">
+    <img src="/content/../_media/screenshots/simple-browse.png" data-origin="/../_media/screenshots/simple-browse.png" alt="simple-browse">
+</p>
