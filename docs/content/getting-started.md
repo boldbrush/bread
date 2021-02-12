@@ -48,6 +48,5 @@ This will yield a similar result like below
 
 !> The image below shows sample data
 
-<p class="in-center">
-    <img src="/../../_media/screenshots/simple-browse.png" data-origin="/../../_media/screenshots/simple-browse.png" alt="simple-browse">
-</p>
+![simple-browse](./../_media/screenshots/simple-browse.png ':class=img-center')
+
