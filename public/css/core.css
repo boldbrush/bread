@@ -1,0 +1,27 @@
+
+th a.js-bread-sortable {
+    display: block;
+	width: 100%;
+	padding-right: 18px;
+	position: relative;
+}
+a.js-bread-sortable:before,
+a.js-bread-sortable:after {
+	border: 4px solid transparent;
+	content: "";
+	display: block;
+	height: 0;
+	right: 5px;
+	top: 50%;
+	position: absolute;
+	width: 0;
+    cursor: pointer;
+}
+a.js-bread-sortable:before {
+	border-bottom-color: #666;
+	margin-top: -9px;
+}
+a.js-bread-sortable:after {
+	border-top-color: #666;
+	margin-top: 1px;
+}

@@ -105,9 +105,10 @@ class Bread
         $connectionName = $this->getModelMetadata()->getConnectionName();
 
         $perPage = $this->perPageFomRequest();
+        $sortBy = $this->getSortByFomRequest();
 
         if ($this->checkIsSearchRequest()) {
-            return $this->search();
+            return $this->search($sortBy);
         }
 
         if (is_callable($query)) {
@@ -118,14 +119,32 @@ class Bread
                     ->getTable()),
                 DB::query()
             );
+            if (!empty($sortBy)) {
+                list($name, $direction) = explode(',', $sortBy);
+                $query->orderBy($name, $direction);
+            }
             $paginator = $query->paginate($perPage);
         } elseif (is_array($this->select) && count($this->select) > 0) {
-            $paginator = $model::select($this->select)->paginate($perPage);
+            $query = $model::select($this->select);
+            if (!empty($sortBy)) {
+                list($name, $direction) = explode(',', $sortBy);
+                $query->orderBy($name, $direction);
+            }
+            $paginator = $query->paginate($perPage);
         } else {
-            $paginator = $model::paginate($perPage);
+            if (!empty($sortBy)) {
+                $paginator = $model::orderBy($sortBy[0], $sortBy[1])->paginate($perPage);
+            } else {
+                $paginator = $model::paginate($perPage);
+            }
         }
 
-        return (new View\Browser($this, $paginator->withQueryString()))->render();
+        return (new View\Browser(
+            $this,
+            $paginator->withQueryString(),
+            $this->request,
+            $this->response
+        ))->render();
     }
 
     /**
@@ -396,6 +415,14 @@ class Bread
         return intval($this->request->query('perPage', $this->perPage));
     }
 
+    public function getSortByFomRequest(): ?array
+    {
+        if ($sortBy = $this->request->query('sortBy')) {
+            $sortBy = explode(',', $this->request->query('sortBy', ''));
+        }
+
+        return $sortBy;
+    }
 
     public function create(?array $data = [])
     {
@@ -517,7 +544,7 @@ class Bread
         return !empty($term) === false ? false : true;
     }
 
-    protected function search()
+    protected function search(?array $sortBy)
     {
         $fields = $this->getFields()
             ->for(FieldContainer::BROWSE)
@@ -562,14 +589,30 @@ class Bread
                     ->getTable()),
                 DB::query()
             );
+            if (!empty($sortBy)) {
+                $query->orderBy($sortBy[0], $sortBy[1]);
+            }
             $paginator = $query->whereLikeBread($searchable, $term)->paginate($perPage);
         } elseif (is_array($this->select) && count($this->select) > 0) {
-            $paginator = $model::select($this->select)->whereLikeBread($searchable, $term)->paginate($perPage);
+            $query = $model::select($this->select)->whereLikeBread($searchable, $term);
+            if (!empty($sortBy)) {
+                $query->orderBy($sortBy[0], $sortBy[1]);
+            }
+            $paginator = $query->paginate($perPage);
         } else {
-            $paginator = $model::whereLikeBread($searchable, $term)->paginate($perPage);
+            $query = $model::whereLikeBread($searchable, $term);
+            if (!empty($sortBy)) {
+                $query->orderBy($sortBy[0], $sortBy[1]);
+            }
+            $paginator = $query->paginate($perPage);
         }
 
-        return (new View\Browser($this, $paginator))->render();
+        return (new View\Browser(
+            $this,
+            $paginator->withQueryString(),
+            $this->request,
+            $this->response
+        ))->render();
     }
 
     public function getFields(): FieldContainer

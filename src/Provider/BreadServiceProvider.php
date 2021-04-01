@@ -43,6 +43,10 @@ class BreadServiceProvider extends ServiceProvider
             realpath(dirname(dirname(__DIR__))) . '/resources/views' => resource_path('views/vendor/bread'),
         ]);
 
+        $this->publishes([
+            realpath(dirname(dirname(__DIR__))) . '/public' => public_path('vendor/bread'),
+        ], 'public');
+
         Blade::componentNamespace('BoldBrush\\Bread\\Views\\Components', 'bread');
 
         EloquentBuilder::macro('whereLikeBread', function ($attributes, string $searchTerm) {

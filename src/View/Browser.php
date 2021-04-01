@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace BoldBrush\Bread\View;
 
 use BoldBrush\Bread\Bread;
+use BoldBrush\Bread\Column\Column;
 use BoldBrush\Bread\Field\FieldContainer;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use stdClass;
 
 class Browser extends Renderer
@@ -24,9 +27,13 @@ class Browser extends Renderer
 
     protected $viewRoute;
 
-    public function __construct(Bread $bread, LengthAwarePaginator $paginator)
-    {
-        parent::__construct($bread, $bread->getFields()->for(FieldContainer::BROWSE)->toArray());
+    public function __construct(
+        Bread $bread,
+        LengthAwarePaginator $paginator,
+        ?Request $request = null,
+        ?Response $response = null
+    ) {
+        parent::__construct($bread, $bread->getFields()->for(FieldContainer::BROWSE)->toArray(), $request, $response);
 
         $this->paginator = $paginator;
     }
@@ -106,15 +113,15 @@ class Browser extends Renderer
             $item = json_decode(json_encode($item), true);
         }
 
-        $fields = $this->fields;
-
         foreach ($item as $key => $value) {
-            if (isset($fields[$key]) && $fields[$key]->isVisible() === false) {
-                unset($item[$key]);
+            if ($this->fields[$key]->isVisible() === false) {
+                continue;
             }
+
+            $fields[$key] = $this->fields[$key];
         }
 
-        return array_keys($item);
+        return $fields;
     }
 
     public function rowHeaders()

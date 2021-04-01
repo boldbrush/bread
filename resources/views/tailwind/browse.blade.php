@@ -59,9 +59,11 @@
                 <table class="min-w-full leading-normal">
                     <thead>
                         <tr>
-                            @foreach ($browser->rowHeaders() as $column)
+                            @foreach ($browser->getColumns() as $column)
                             <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                {{ $column }}
+                                <a {{ $column->sortLink() }} class="{{  $column->getStringCssClasses() }}">
+                                    {{ $column->label() }}
+                                </a>
                             </th>
                             @endforeach
                             @if ($browser->routeBuilder()->hasActionRoutes())
@@ -76,7 +78,7 @@
                         <tr>
                             @foreach ($browser->getColumns() as $column)
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                {{ $item->{$column} }}
+                                {{ $item->{$column->getName()} }}
                             </td>
                             @endforeach
                             @if ($browser->routeBuilder()->hasActionRoutes())
@@ -121,58 +123,16 @@
         @endif
     </div>
 </div>
+@endsection
 
+@section('js')
 <script>
-    function detectQueryString(url) {
-        // regex pattern for detecting querystring
-        var pattern = new RegExp(/\?.+=.*/g);
-        return pattern.test(url);
-    }
-    function removePerPage(url) {
-        return url.replace(/[?&]perPage=.*[0-9]/g, '');
-    }
-    function changePerPage(event) {
-        event = event || window.event;
-        var element = event.target;
-        if (element) {
-            var perPage = 'perPage=' + element.value;
-            var prefix = '?';
-            var base = window.location.href;
-            base = removePerPage(base);
-            if (detectQueryString(base)) {
-                prefix = '&'
-            }
-            var redirect = `${base}${prefix}${perPage}`;
-            window.location.href = redirect
-        }
-    }
-
-    document.getElementById('perpage-js').addEventListener("change", changePerPage, false);
+    document.getElementById('perpage-js').addEventListener("change", bread.changePerPage, false);
 </script>
 
 @if ($browser->routeBuilder()->hasDeleteRoute())
 <script>
-    function findParentByTagName(element, className) {
-        var parent = element;
-        while (parent !== null && parent.classList.value.indexOf(className) === -1) {
-            parent = parent.parentElement;
-        }
-        return parent;
-    }
-
-    function handleAnchorClick(event) {
-        event = event || window.event;
-        var element = findParentByTagName(event.target, "js-delete");
-        if (element) {
-            event.preventDefault();
-            if (window.confirm("Do you really want to delete this item?")) {
-                window.location.href = element.getAttribute("href");
-            }
-        }
-    }
-
-    document.documentElement.addEventListener("click", handleAnchorClick, false);
+    document.documentElement.addEventListener("click", bread.handleAnchorClick, false);
 </script>
 @endif
-
 @endsection

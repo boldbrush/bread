@@ -17,5 +17,9 @@ interface FieldInterface
     public function setType(string $type): FieldInterface;
     public function setCustomElementAfter(callable $function): FieldInterface;
     public function setDataSource(callable $function): FieldInterface;
+    public function sortLink(): ?string;
+    public function setSortDirection(int $sortDirection): FieldInterface;
+    public function setSortBy(array $httpQuery = []): FieldInterface;
+    public function addCssClass(string $key, $class): FieldInterface;
     public function render(string $value): string;
 }

@@ -10,10 +10,9 @@
     <!-- Fonts -->
     <!-- Styles -->
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-    </style>
+    <link rel="stylesheet" href="{{ asset('vendor/bread/css/core.css') }}">
+    @yield('css')
 </head>
-
 <body class="antialiased">
     <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
         <div class="mx-auto sm:px-6 lg:px-8">
@@ -24,6 +23,7 @@
             </div>
         </div>
     </div>
+    <script src="{{ asset('vendor/bread/js/core.js') }}"></script>
+    @yield('js')
 </body>
-
 </html>

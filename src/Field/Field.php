@@ -6,6 +6,7 @@ namespace BoldBrush\Bread\Field;
 
 use BoldBrush\Bread\System\FieldToInputTypeMapper;
 use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class Field implements FieldInterface
@@ -17,6 +18,8 @@ class Field implements FieldInterface
     protected $visible = true;
 
     protected $sortable = true;
+
+    protected $sortDirection = 0;
 
     protected $searchable = true;
 
@@ -34,9 +37,16 @@ class Field implements FieldInterface
 
     protected $length = null;
 
+    protected $cssClasses;
+
+    protected $httpQuery;
+
     public function __construct(string $name)
     {
         $this->setName($name);
+        $this->cssClasses = collect([]);
+
+        $this->addCssClass('name', 'js-id-' . $this->getName());
     }
 
     public function setName(string $name): FieldInterface
@@ -63,6 +73,10 @@ class Field implements FieldInterface
     public function setSortable(bool $sortable): FieldInterface
     {
         $this->sortable = $sortable;
+
+        if ($this->sortable) {
+            $this->addCssClass('sortable', 'js-bread-sortable');
+        }
 
         return $this;
     }
@@ -123,6 +137,27 @@ class Field implements FieldInterface
         return $this;
     }
 
+    public function addCssClass(string $key, $class): FieldInterface
+    {
+        $this->cssClasses->put($key, $class);
+
+        return $this;
+    }
+
+    public function getCssClasses(): array
+    {
+        if ($this->sortable && !$this->cssClasses->has('sortable')) {
+            $this->addCssClass('sortable', 'js-bread-sortable');
+        }
+
+        return $this->cssClasses->toArray();
+    }
+
+    public function getStringCssClasses(): string
+    {
+        return implode(' ', $this->getCssClasses());
+    }
+
     public function getDataSource(): callable
     {
         return $this->dataSource;
@@ -165,6 +200,52 @@ class Field implements FieldInterface
         $label = str_replace('_', ' ', $label);
 
         return Str::title($label);
+    }
+
+    public function sortLink(): ?string
+    {
+        $link = null;
+
+        if ($this->sortDirection === -1) {
+            $this->addCssClass('sortable', 'js-bread-sortable desc');
+            $direction = 'desc';
+        } else {
+            $this->addCssClass('sortable', 'js-bread-sortable asc');
+            $direction = 'asc';
+        }
+
+        $parameters = ['sortBy' => "{$this->getName()},$direction"];
+
+        if (count($this->httpQuery) > 0) {
+            $parameters = array_merge($this->httpQuery, $parameters);
+        }
+
+        $url = url()->current() . '?' . Arr::query($parameters);
+
+        return "href=$url";
+    }
+
+    public function setSortDirection(int $sortDirection): FieldInterface
+    {
+        $this->sortDirection = $sortDirection;
+
+        return $this;
+    }
+
+    public function setSortBy(array $httpQuery = []): FieldInterface
+    {
+        $this->httpQuery = $httpQuery;
+
+        if (isset($httpQuery['sortBy'])) {
+            list($name, $direction) = explode(',', $httpQuery['sortBy']);
+
+            if ($this->getName() === $name) {
+                $direction = $direction == 'desc' ? 1 : -1;
+                $this->setSortDirection($direction);
+            }
+        }
+
+        return $this;
     }
 
     public function setComponent(string $component): self

@@ -8,6 +8,8 @@ use BoldBrush\Bread\Bread;
 use BoldBrush\Bread\Field\Field;
 use BoldBrush\Bread\Helper\Route\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use stdClass;
 
@@ -33,13 +35,21 @@ abstract class Renderer implements RendererInterface
 
     protected $view;
 
-    public function __construct(Bread $bread, array $fields)
+    /** @var Request  */
+    protected $request;
+
+    /** @var Response  */
+    protected $response;
+
+    public function __construct(Bread $bread, array $fields, ?Request $request = null, ?Response $response = null)
     {
         $this->bread = $bread;
         $this->fields = $fields;
         $this->table = $bread->getModelMetadata()->getTable();
         $this->pkColumn = $bread->getModelMetadata()->getPrimaryKeyName();
         $this->routeBuilder = new Builder($bread->actionLinks(), $this->pkColumn);
+        $this->request = $request;
+        $this->response = $response;
         $this->setTitle($bread->getTitle())
             ->setLayout($bread->getLayout())
             ->setView($bread->getView())
@@ -47,6 +57,20 @@ abstract class Renderer implements RendererInterface
     }
 
     abstract public function render(): string;
+
+    public function request(Request $request): self
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    public function response(Response $response): self
+    {
+        $this->response = $response;
+
+        return $this;
+    }
 
     public function setTitle($title): self
     {
@@ -128,6 +152,11 @@ abstract class Renderer implements RendererInterface
                 $this->fields[$column->getName()] = (new Field($column->getName()))
                     ->setLength($column->getLength())
                     ->setType($column->getType()->getName());
+            }
+
+            if (isset($this->request)) {
+                $this->fields[$column->getName()]
+                    ->setSortBy($this->request->query());
             }
         }
 
