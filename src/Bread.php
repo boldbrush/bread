@@ -120,20 +120,21 @@ class Bread
                 DB::query()
             );
             if (!empty($sortBy)) {
-                list($name, $direction) = explode(',', $sortBy);
+                list($name, $direction) = $sortBy;
                 $query->orderBy($name, $direction);
             }
             $paginator = $query->paginate($perPage);
         } elseif (is_array($this->select) && count($this->select) > 0) {
             $query = $model::select($this->select);
             if (!empty($sortBy)) {
-                list($name, $direction) = explode(',', $sortBy);
+                list($name, $direction) = $sortBy;
                 $query->orderBy($name, $direction);
             }
             $paginator = $query->paginate($perPage);
         } else {
             if (!empty($sortBy)) {
-                $paginator = $model::orderBy($sortBy[0], $sortBy[1])->paginate($perPage);
+                list($name, $direction) = $sortBy;
+                $paginator = $model::orderBy($name, $direction)->paginate($perPage);
             } else {
                 $paginator = $model::paginate($perPage);
             }
@@ -590,19 +591,22 @@ class Bread
                 DB::query()
             );
             if (!empty($sortBy)) {
-                $query->orderBy($sortBy[0], $sortBy[1]);
+                list($name, $direction) = $sortBy;
+                $query->orderBy($name, $direction);
             }
             $paginator = $query->whereLikeBread($searchable, $term)->paginate($perPage);
         } elseif (is_array($this->select) && count($this->select) > 0) {
             $query = $model::select($this->select)->whereLikeBread($searchable, $term);
             if (!empty($sortBy)) {
-                $query->orderBy($sortBy[0], $sortBy[1]);
+                list($name, $direction) = $sortBy;
+                $query->orderBy($name, $direction);
             }
             $paginator = $query->paginate($perPage);
         } else {
             $query = $model::whereLikeBread($searchable, $term);
             if (!empty($sortBy)) {
-                $query->orderBy($sortBy[0], $sortBy[1]);
+                list($name, $direction) = $sortBy;
+                $query->orderBy($name, $direction);
             }
             $paginator = $query->paginate($perPage);
         }
