@@ -125,7 +125,7 @@
 </div>
 @endsection
 
-@section('js')
+@section('js-bb-bread')
 <script>
     document.getElementById('perpage-js').addEventListener("change", bread.changePerPage, false);
 </script>

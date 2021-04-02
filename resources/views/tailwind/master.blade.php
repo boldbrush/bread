@@ -24,6 +24,6 @@
         </div>
     </div>
     <script src="{{ asset('vendor/bread/js/core.js') }}"></script>
-    @yield('js')
+    @yield('js-bb-bread')
 </body>
 </html>
