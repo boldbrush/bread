@@ -204,7 +204,9 @@ class Field implements FieldInterface
 
     public function sortLink(): ?string
     {
-        $link = null;
+        if ($this->sortDirection === 0) {
+            return null;
+        }
 
         if ($this->sortDirection === -1) {
             $this->addCssClass('sortable', 'js-bread-sortable desc');
