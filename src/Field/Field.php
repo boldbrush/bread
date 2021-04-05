@@ -204,7 +204,7 @@ class Field implements FieldInterface
 
     public function sortLink(): ?string
     {
-        if ($this->sortDirection === 0) {
+        if (!$this->isSortable()) {
             return null;
         }
 
