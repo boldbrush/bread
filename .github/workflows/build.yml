@@ -35,7 +35,7 @@ jobs:
       - name: Test with Code_Sniffer and phpunit
         run: composer check
       - name: Install Coveralls dependency
-        run: composer require php-coveralls/php-coveralls
+        run: composer require php-coveralls/php-coveralls --with-all-dependencies
       - name: Send code coverage report to coveralls.io
         run: vendor/bin/php-coveralls -c .coveralls.yml -v
         env:
