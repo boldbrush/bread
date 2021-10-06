@@ -127,7 +127,7 @@ class Builder
         if ($item) {
             $id = $item->{$this->pkColumn};
 
-            return str_replace(':id', $id, $this->save);
+            return str_replace(':id', strval($id), strval($this->save));
         }
 
         return $this->save;
