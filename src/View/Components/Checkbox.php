@@ -21,7 +21,7 @@ class Checkbox extends AbstractComponent
         $this->checkbox = $checkbox;
     }
 
-    public static function factory(string $name, string $label, Field $field, $value = null): Component
+    public static function make(string $name, string $label, Field $field, $value = null): Component
     {
         return new self($name, $label, $field, boolval($value));
     }

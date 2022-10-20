@@ -21,7 +21,7 @@ class Number extends AbstractComponent
         $this->number = $number;
     }
 
-    public static function factory(string $name, string $label, Field $field, $value = null): Component
+    public static function make(string $name, string $label, Field $field, $value = null): Component
     {
         return new self($name, $label, $field, intval($value));
     }

@@ -265,7 +265,7 @@ class Field implements FieldInterface
     public function render($value): string
     {
         $component = $this->component;
-        $component = $component::factory($this->getName(), $this->label(), $this, $value);
+        $component = $component::make($this->getName(), $this->label(), $this, $value);
 
         return strval($component->render());
     }

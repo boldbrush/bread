@@ -23,7 +23,7 @@ abstract class AbstractComponent extends Component
         $this->components = config('bread')['theme'] . '.components';
     }
 
-    abstract public static function factory(string $name, string $label, Field $field, $value = null): Component;
+    abstract public static function make(string $name, string $label, Field $field, $value = null): Component;
 
     abstract public function render();
 }
