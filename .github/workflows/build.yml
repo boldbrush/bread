@@ -33,7 +33,7 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
       - name: Test with Code_Sniffer and phpunit
-        run: composer check
+        run: composer action
       - name: Install Coveralls dependency
         run: composer require php-coveralls/php-coveralls --with-all-dependencies
       - name: Send code coverage report to coveralls.io

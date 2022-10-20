@@ -59,6 +59,10 @@
             "@cs-check",
             "@test"
         ],
+        "action": [
+            "@cs-check",
+            "@test-coverage"
+        ],
         "githooks": [
             "@pre-commit",
             "@pre-push"
@@ -70,7 +74,7 @@
         "cs-fix": "vendor/bin/phpcbf",
         "test": "vendor/bin/phpunit --colors=always",
         "test-html": "vendor/bin/phpunit --coverage-html ./build/logs/html",
-        "test-coverage": "vendor/bin/phpunit --colors=always --coverage-clover ./build/logs/clover.xml",
+        "test-coverage": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --colors=always --coverage-clover ./build/logs/clover.xml",
         "test-txt": "vendor/bin/phpunit --colors=always --coverage-text ./tests"
     }
 }
