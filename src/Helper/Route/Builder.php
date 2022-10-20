@@ -100,14 +100,14 @@ class Builder
     {
         $id = $item->{$this->pkColumn};
 
-        return str_replace(':id', $id, $this->edit);
+        return str_replace(':id', strval($id), $this->edit);
     }
 
     public function read(object $item): string
     {
         $id = $item->{$this->pkColumn};
 
-        return str_replace(':id', $id, $this->read);
+        return str_replace(':id', strval($id), $this->read);
     }
 
     public function add(): string
@@ -119,7 +119,7 @@ class Builder
     {
         $id = $item->{$this->pkColumn};
 
-        return str_replace(':id', $id, $this->delete);
+        return str_replace(':id', strval($id), $this->delete);
     }
 
     public function save(?object $item = null): string
