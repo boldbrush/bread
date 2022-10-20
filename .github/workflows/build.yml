@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        operating-system: [ubuntu-18.04, macos-latest] #https://github.com/actions/virtual-environments/issues/1816
+        operating-system: [ubuntu-latest, macos-latest] #https://github.com/actions/virtual-environments/issues/1816
         php-versions: ['8.1']
     steps:
       - name: Checkout
