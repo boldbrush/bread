@@ -447,9 +447,11 @@ class Bread
 
         $sm = $this
             ->getConnectionConfigForModel()
-            ->getSchemaManager();
+            ->createSchemaManager();
 
-        $platform = $sm->getDatabasePlatform();
+        $platform = $this
+            ->getConnectionConfigForModel()
+            ->getDatabasePlatform();
 
         $columns = $sm->listTableColumns($this->getModelMetadata()->getTable());
 
@@ -509,9 +511,11 @@ class Bread
 
         $sm = $this
             ->getConnectionConfigForModel()
-            ->getSchemaManager();
+            ->createSchemaManager();
 
-        $platform = $sm->getDatabasePlatform();
+        $platform = $this
+            ->getConnectionConfigForModel()
+            ->getDatabasePlatform();
 
         $columns = $sm->listTableColumns($this->getModelMetadata()->getTable());
 
@@ -552,7 +556,7 @@ class Bread
             ->toArray();
         $sm = $this
             ->getConnectionConfigForModel()
-            ->getSchemaManager();
+            ->createSchemaManager();
 
         $columns = $sm->listTableColumns($this->getModelMetadata()->getTable());
 

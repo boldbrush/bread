@@ -137,7 +137,7 @@ abstract class Renderer implements RendererInterface
     {
         $sm = $this->bread
             ->getConnectionConfigForModel()
-            ->getSchemaManager();
+            ->createSchemaManager();
 
         $columns = $sm->listTableColumns($this->table);
 
