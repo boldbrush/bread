@@ -8,7 +8,7 @@ use Illuminate\View\Component;
 
 class Text extends ParentText
 {
-    public static function factory(string $name, string $label, Field $field, $value = null): Component
+    public static function make(string $name, string $label, Field $field, $value = null): Component
     {
         return new self($name, $label, $field, strval($value));
     }
