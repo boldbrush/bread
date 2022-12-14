@@ -10,6 +10,7 @@ interface FieldInterface
 {
     public function setEditable(bool $editable): FieldInterface;
     public function setVisible(bool $visible): FieldInterface;
+    public function setCustom(bool $visible): FieldInterface;
     public function setSortable(bool $sortable): FieldInterface;
     public function setSearchable(bool $searchable): FieldInterface;
     public function setHelpText(string $helpText): FieldInterface;

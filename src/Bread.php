@@ -12,13 +12,14 @@ use BoldBrush\Bread\Field\FieldContainer;
 use BoldBrush\Bread\Helper\Route\Builder;
 use BoldBrush\Bread\Model\Metadata;
 use BoldBrush\Bread\Page\Page;
-use BoldBrush\Bread\View;
 use BoldBrush\Bread\System\Database\ConnectionManager;
+use BoldBrush\Bread\View;
 use Doctrine\DBAL\Connection;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class Bread
@@ -73,6 +74,12 @@ class Bread
     public function __construct(?array $config = null)
     {
         $this->global = new Repository(config('bread'));
+
+        if (isset($config['model'])) {
+            $this->model = $config['model'];
+
+            unset($config['model']);
+        }
 
         $this->setPage(new Page())
             ->setFields(new FieldContainer())
@@ -298,12 +305,50 @@ class Bread
 
         $this->model = $this->getModelMetadata()->getModelClass();
 
+        $this->setupFields();
+
         return $this;
     }
 
     public function configureFields(string $for = FieldContainer::GENERAL): Config
     {
         return new Config($for, $this->getFields()->for($for), $this);
+    }
+
+    public function setupFields(string $for = FieldContainer::GENERAL): self
+    {
+        $sm = $this->getConnectionConfigForModel()
+            ->createSchemaManager();
+
+        $columns = $sm->listTableColumns(
+            $this->getModelMetadata()
+                ->getTable()
+        );
+
+        $fields = $this->getFields()->for($for);
+
+        foreach ($columns as $column) {
+            if (isset($fields[$column->getName()])) {
+                $fields[$column->getName()]
+                    ->setLength($column->getLength());
+                if (!is_string($fields[$column->getName()]->getType())) {
+                    $fields[$column->getName()]->setType($column->getType()->getName());
+                }
+            } else {
+                $fields[$column->getName()] = (new Field($column->getName()))
+                    ->setLength($column->getLength())
+                    ->setType($column->getType()->getName());
+            }
+
+            if (isset($this->request)) {
+                $fields[$column->getName()]
+                    ->setSortBy($this->request->query());
+            }
+        }
+
+        $this->getFields()->setFor($fields, $for);
+
+        return $this;
     }
 
     /**

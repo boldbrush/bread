@@ -29,6 +29,7 @@ class BreadTest extends TestCase
                     },
                 ],
             ],
+            'model' => Model\User::class,
         ]);
 
         $this->assertInstanceOf(Bread::class, $bread);
@@ -47,6 +48,7 @@ class BreadTest extends TestCase
         $bread = (new Bread())->model(Model\User::class)
             ->configureFields()
                 ->field('id')
+                    ->editable(false)
                 ->field('email')
                     ->editable(false)
                     ->visible(true)
@@ -64,9 +66,22 @@ class BreadTest extends TestCase
                     })
             ->bread();
 
+        $fields = $bread->getFields()->for()->toArray();
+
+        $expected = [
+            'id',
+            'name',
+            'email',
+            'email_verified_at',
+            'password',
+            'remember_token',
+            'created_at',
+            'updated_at',
+        ];
+
         $this->assertSame(
-            ['id', 'email'],
-            array_keys($bread->getFields()->for()->toArray())
+            $expected,
+            array_keys($fields)
         );
 
         foreach ($bread->getFields()->for()->toArray() as $field) {
@@ -80,6 +95,7 @@ class BreadTest extends TestCase
         $bread = (new Bread())->model(Model\User::class)
             ->configureFields(FieldContainer::BROWSE)
                 ->field('id')
+                    ->editable(false)
                 ->field('email')
                     ->editable(false)
                     ->visible(true)
@@ -97,8 +113,19 @@ class BreadTest extends TestCase
                     })
             ->bread();
 
+        $expected = [
+            'id',
+            'name',
+            'email',
+            'email_verified_at',
+            'password',
+            'remember_token',
+            'created_at',
+            'updated_at',
+        ];
+
         $this->assertSame(
-            ['id', 'email'],
+            $expected,
             array_keys($bread->getFields()->for(FieldContainer::BROWSE)->toArray())
         );
 
@@ -121,8 +148,7 @@ class BreadTest extends TestCase
 
     public function testEditIdentifierCannotBeNullPass()
     {
-        $user = Model\User::factory()->make();
-        $user->save();
+        $user = Model\User::factory()->create();
 
         $view = (new Bread())->model(Model\User::class)
             ->actionLink('edit', '/edit/:id')
@@ -133,9 +159,7 @@ class BreadTest extends TestCase
 
     public function testGetActionLinks()
     {
-        $user = Model\User::factory()->make();
-
-        $user->save();
+        $user = Model\User::factory()->create();
 
         $bread = (new Bread())->model(Model\User::class)
             ->actionLink('edit', '/edit/:id');
@@ -214,7 +238,31 @@ class BreadTest extends TestCase
 
         $this->assertInstanceOf(Bread::class, $bread);
         $this->assertStringContainsString('Adro Rocker', $view);
-        $this->assertStringContainsString('Id', $view);
+        $this->assertStringContainsString('Password', $view);
+        $this->assertStringContainsString('123456', $view);
+    }
+
+    public function testBrowseBrowseDataHideAll()
+    {
+        $user = new Model\User();
+        $user->name = 'Adro Rocker';
+        $user->email = 'me@adro.rocks';
+        $user->password = '123456';
+        $user->save();
+
+        $bread = (new Bread())
+            ->model(Model\User::class)
+            ->configureFields()
+                ->hideAll()
+                ->field('name')
+                    ->visible(true)
+            ->bread();
+
+        $view = $bread->browse();
+
+        $this->assertInstanceOf(Bread::class, $bread);
+        $this->assertStringContainsString('Adro Rocker', $view);
+        $this->assertStringNotContainsString('123456', $view);
     }
 
     public function testEditView()

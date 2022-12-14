@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BoldBrush\Bread\Field;
 
 use BoldBrush\Bread\System\FieldToInputTypeMapper;
-use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
@@ -16,6 +15,8 @@ class Field implements FieldInterface
     protected $editable = true;
 
     protected $visible = true;
+
+    protected $custom = false;
 
     protected $sortable = true;
 
@@ -68,6 +69,13 @@ class Field implements FieldInterface
         $this->visible = $visible;
 
         return $this;
+    }
+
+    public function setCustom(bool $custom): FieldInterface
+    {
+        $this->custom = $custom;
+
+        return  $this;
     }
 
     public function setSortable(bool $sortable): FieldInterface
@@ -176,6 +184,11 @@ class Field implements FieldInterface
     public function isVisible(): bool
     {
         return boolval($this->visible);
+    }
+
+    public function isCustom(): bool
+    {
+        return boolval($this->custom);
     }
 
     public function isSortable(): bool

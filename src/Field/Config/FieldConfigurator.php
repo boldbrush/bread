@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BoldBrush\Bread\Field\Config;
 
-use BoldBrush\Bread\Field\Field;
 use BoldBrush\Bread\Bread;
+use BoldBrush\Bread\Field\Field;
 use Illuminate\Support\Collection;
 
 class FieldConfigurator
@@ -36,6 +36,13 @@ class FieldConfigurator
     public function visible(bool $visible): self
     {
         $this->field->setVisible($visible);
+
+        return $this;
+    }
+
+    public function custom(bool $custom): self
+    {
+        $this->field->setCustom($custom);
 
         return $this;
     }

@@ -135,30 +135,10 @@ abstract class Renderer implements RendererInterface
 
     protected function setupFields(): self
     {
-        $sm = $this->bread
-            ->getConnectionConfigForModel()
-            ->createSchemaManager();
-
-        $columns = $sm->listTableColumns($this->table);
-
-        foreach ($columns as $column) {
-            if (isset($this->fields[$column->getName()])) {
-                $this->fields[$column->getName()]
-                    ->setLength($column->getLength());
-                if (!is_string($this->fields[$column->getName()]->getType())) {
-                    $this->fields[$column->getName()]->setType($column->getType()->getName());
-                }
-            } else {
-                $this->fields[$column->getName()] = (new Field($column->getName()))
-                    ->setLength($column->getLength())
-                    ->setType($column->getType()->getName());
-            }
-
-            if (isset($this->request)) {
-                $this->fields[$column->getName()]
-                    ->setSortBy($this->request->query());
-            }
-        }
+        $this->fields = $this->bread()
+            ->setupFields()
+            ->getFields()
+            ->for();
 
         return $this;
     }

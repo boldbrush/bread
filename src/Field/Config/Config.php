@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BoldBrush\Bread\Field\Config;
 
-use BoldBrush\Bread\Field\Field;
 use BoldBrush\Bread\Bread;
+use BoldBrush\Bread\Field\Field;
 use Illuminate\Support\Collection;
 
 class Config
@@ -24,6 +24,13 @@ class Config
         $this->for = $for;
         $this->fields = $fields;
         $this->bread = $bread;
+    }
+
+    public function hideAll()
+    {
+        $this->fields->each(fn ($field) => $field->setVisible(false));
+
+        return $this;
     }
 
     public function field(string $name): FieldConfigurator
